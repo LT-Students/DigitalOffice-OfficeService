@@ -47,6 +47,11 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
       List<Guid> userIds,
       List<OfficeData> offices)
     {
+      if (userIds == null)
+      {
+        return;
+      }
+
       string key = userIds.GetRedisCacheHashCode();
 
       if (offices != null && offices.Any())

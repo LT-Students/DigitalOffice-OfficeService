@@ -10,6 +10,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
   [ApiController]
   public class UsersController : ControllerBase
   {
+    [HttpPost("change")]
     public async Task<OperationResultResponse<bool>> ChangeOfficeAsync(
       [FromServices] IChangeOfficeCommand command,
       [FromBody] ChangeOfficeRequest request)

@@ -19,6 +19,8 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Models
         Name = office.Name,
         City = office.City,
         Address = office.Address,
+        Longitude = office.Longitude,
+        Latitude = office.Latitude,
         IsActive = office.IsActive
       };
     }
