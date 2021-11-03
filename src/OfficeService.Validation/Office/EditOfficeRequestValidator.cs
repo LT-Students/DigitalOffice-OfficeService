@@ -49,7 +49,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
         x => x == OperationType.Replace,
         new()
         {
-          { x => !string.IsNullOrEmpty(x.value?.ToString()), "Address cannot be empty." },
+          { x => !string.IsNullOrEmpty(x.value?.ToString().Trim()), "Address cannot be empty." },
         });
 
       #endregion

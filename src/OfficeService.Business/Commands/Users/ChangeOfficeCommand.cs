@@ -46,7 +46,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
       _cacheNotebook = cacheNotebook;
     }
 
-    public async Task<OperationResultResponse<bool>> ExecuteAsync(ChangeOfficeRequest request)
+    public async Task<OperationResultResponse<bool>> ExecuteAsync(ChangeUserOfficeRequest request)
     {
       if (_httpContextAccessor.HttpContext.GetUserId() != request.UserId
         && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
