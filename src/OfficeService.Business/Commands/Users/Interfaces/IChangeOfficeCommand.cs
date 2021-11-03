@@ -8,6 +8,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users.Interfaces
   [AutoInject]
   public interface IChangeOfficeCommand
   {
-    Task<OperationResultResponse<bool>> ExecuteAsync(ChangeOfficeRequest request);
+    Task<OperationResultResponse<bool>> ExecuteAsync(ChangeUserOfficeRequest request);
   }
 }

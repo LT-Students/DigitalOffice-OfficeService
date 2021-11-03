@@ -10,6 +10,6 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces
   {
     DbOfficeUser Map(ICreateUserOfficeRequest request);
 
-    DbOfficeUser Map(ChangeOfficeRequest request);
+    DbOfficeUser Map(ChangeUserOfficeRequest request);
   }
 }

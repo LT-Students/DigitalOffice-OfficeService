@@ -35,7 +35,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db
       };
     }
 
-    public DbOfficeUser Map(ChangeOfficeRequest request)
+    public DbOfficeUser Map(ChangeUserOfficeRequest request)
     {
       if (request == null || !request.OfficeId.HasValue)
       {

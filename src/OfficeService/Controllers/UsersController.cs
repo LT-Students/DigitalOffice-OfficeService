@@ -13,7 +13,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
     [HttpPost("change")]
     public async Task<OperationResultResponse<bool>> ChangeOfficeAsync(
       [FromServices] IChangeOfficeCommand command,
-      [FromBody] ChangeOfficeRequest request)
+      [FromBody] ChangeUserOfficeRequest request)
     {
       return await command.ExecuteAsync(request);
     }

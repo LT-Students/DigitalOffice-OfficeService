@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.OfficeService.Validation.Users
 {
-  public class ChangeOfficeRequestValidator : AbstractValidator<ChangeOfficeRequest>, IChangeOfficeRequestValidator
+  public class ChangeOfficeRequestValidator : AbstractValidator<ChangeUserOfficeRequest>, IChangeOfficeRequestValidator
   {
     private readonly IRequestClient<ICheckUsersExistence> _rcCheckUsers;
     private readonly ILogger<ChangeOfficeRequestValidator> _logger;
