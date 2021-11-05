@@ -25,7 +25,7 @@ namespace LT.DigitalOffice.OfficeService.Data
         return false;
       }
 
-      _provider.OfficeUsers.Add(user);
+      _provider.OfficesUsers.Add(user);
       await _provider.SaveAsync();
 
       return true;
@@ -33,7 +33,7 @@ namespace LT.DigitalOffice.OfficeService.Data
 
     public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds)
     {
-      IQueryable<DbOfficeUser> users = _provider.OfficeUsers.Include(ou => ou.Office).AsQueryable();
+      IQueryable<DbOfficeUser> users = _provider.OfficesUsers.Include(ou => ou.Office).AsQueryable();
 
       if (usersIds != null)
       {
@@ -45,7 +45,7 @@ namespace LT.DigitalOffice.OfficeService.Data
 
     public async Task<Guid?> RemoveAsync(Guid userId, Guid removedBy)
     {
-      DbOfficeUser user = await _provider.OfficeUsers.FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
+      DbOfficeUser user = await _provider.OfficesUsers.FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
 
       if (user != null)
       {

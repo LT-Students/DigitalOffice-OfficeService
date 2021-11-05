@@ -24,6 +24,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
           nameof(EditOfficeRequest.Address),
           nameof(EditOfficeRequest.Longitude),
           nameof(EditOfficeRequest.Latitude),
+          nameof(EditOfficeRequest.IsActive),
         });
 
       AddСorrectOperations(nameof(EditOfficeRequest.Name), new() { OperationType.Replace });
@@ -31,6 +32,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
       AddСorrectOperations(nameof(EditOfficeRequest.Address), new() { OperationType.Replace });
       AddСorrectOperations(nameof(EditOfficeRequest.Longitude), new() { OperationType.Replace });
       AddСorrectOperations(nameof(EditOfficeRequest.Latitude), new() { OperationType.Replace });
+      AddСorrectOperations(nameof(EditOfficeRequest.IsActive), new() { OperationType.Replace });
 
       #endregion
 
@@ -50,6 +52,18 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
         new()
         {
           { x => !string.IsNullOrEmpty(x.value?.ToString().Trim()), "Address cannot be empty." },
+        });
+
+      #endregion
+
+      #region IsActive
+
+      AddFailureForPropertyIf(
+        nameof(EditOfficeRequest.IsActive),
+        x => x == OperationType.Replace,
+        new()
+        {
+          { x => bool.TryParse(x.value?.ToString(), out _), "Incorrect IsActive value." },
         });
 
       #endregion

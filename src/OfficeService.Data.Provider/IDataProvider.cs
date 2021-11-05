@@ -10,6 +10,6 @@ namespace LT.DigitalOffice.OfficeService.Data.Provider
   public interface IDataProvider : IBaseDataProvider
   {
     DbSet<DbOffice> Offices { get; set; }
-    DbSet<DbOfficeUser> OfficeUsers { get; set; }
+    DbSet<DbOfficeUser> OfficesUsers { get; set; }
   }
 }

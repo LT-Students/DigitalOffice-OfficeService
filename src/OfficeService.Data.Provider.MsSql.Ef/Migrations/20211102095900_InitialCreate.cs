@@ -21,8 +21,8 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         {
           Id = table.Column<Guid>(nullable: false),
           Name = table.Column<string>(nullable: false),
-          City = table.Column<string>(nullable: true),
-          Address = table.Column<string>(nullable: true),
+          City = table.Column<string>(nullable: false),
+          Address = table.Column<string>(nullable: false),
           Latitude = table.Column<double>(nullable: false),
           Longitude = table.Column<double>(nullable: false),
           CreatedBy = table.Column<Guid>(nullable: false),
