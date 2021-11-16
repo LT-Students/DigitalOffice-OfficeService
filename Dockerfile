@@ -5,7 +5,7 @@ COPY . ./
 RUN dotnet restore -s https://api.nuget.org/v3/index.json
 
 COPY . ./
-RUN dotnet publish -c Develop -o out
+RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
