@@ -1,10 +1,10 @@
 ﻿using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
+using LT.DigitalOffice.Models.Broker.Requests.Office;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
 using LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces;
-using LT.DigitalOffice.Kernel.Broker;
-using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using MassTransit;
-using LT.DigitalOffice.Models.Broker.Requests.Office;
 
 namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {

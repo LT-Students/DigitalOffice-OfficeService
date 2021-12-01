@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using FluentValidation;
-using LT.DigitalOffice.Kernel.Broker;
+using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
 using LT.DigitalOffice.Models.Broker.Common;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Users;
@@ -24,7 +24,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Users
       {
         Response<IOperationResult<ICheckUsersExistence>> response =
           await _rcCheckUsers.GetResponse<IOperationResult<ICheckUsersExistence>>(
-            ICheckUsersExistence.CreateObj(new() { userId}));
+            ICheckUsersExistence.CreateObj(new() { userId }));
 
         if (response.Message.IsSuccess && response.Message.Body.UserIds.Contains(userId))
         {
@@ -33,7 +33,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Users
 
         _logger.LogWarning(logMessage, userId);
       }
-      catch(Exception exc)
+      catch (Exception exc)
       {
         _logger.LogError(exc, logMessage, userId);
       }
