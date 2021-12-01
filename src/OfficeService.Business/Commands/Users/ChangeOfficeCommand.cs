@@ -3,11 +3,12 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
-using LT.DigitalOffice.Kernel.AccessValidatorEngine.Interfaces;
+using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.OfficeService.Business.Commands.Users.Interfaces;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
@@ -22,7 +23,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
   {
     private readonly IAccessValidator _accessValidator;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IResponseCreater _responseCreater;
+    private readonly IResponseCreator _responseCreater;
     private readonly IChangeOfficeRequestValidator _validator;
     private readonly IDbOfficeUserMapper _mapper;
     private readonly IOfficeUserRepository _repository;
@@ -31,7 +32,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
     public ChangeOfficeCommand(
       IAccessValidator accessValidator,
       IHttpContextAccessor httpContextAccessor,
-      IResponseCreater responseCreater,
+      IResponseCreator responseCreater,
       IChangeOfficeRequestValidator validator,
       IDbOfficeUserMapper mapper,
       IOfficeUserRepository repository,

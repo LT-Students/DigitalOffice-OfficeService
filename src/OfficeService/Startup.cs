@@ -2,13 +2,19 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
+using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
+using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
+using LT.DigitalOffice.Kernel.BrokerSupport.Middlewares.Token;
+using LT.DigitalOffice.Kernel.Configurations;
+using LT.DigitalOffice.Kernel.Extensions;
+using LT.DigitalOffice.Kernel.Helpers;
+using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
+using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.OfficeService.Broker.Consumers;
 using LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef;
 using LT.DigitalOffice.OfficeService.Models.Dto.Configuration;
-using LT.DigitalOffice.Kernel.Configurations;
-using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
-using LT.DigitalOffice.Kernel.Middlewares.Token;
 using MassTransit;
 using MassTransit.RabbitMqTransport;
 using Microsoft.AspNetCore.Builder;
@@ -18,12 +24,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
 using Serilog;
-using System.Text.RegularExpressions;
-using LT.DigitalOffice.Kernel.Helpers;
-using LT.DigitalOffice.Kernel.Helpers.Interfaces;
-using LT.DigitalOffice.UserService.Models.Dto.Configurations;
+using StackExchange.Redis;
 
 namespace LT.DigitalOffice.OfficeService
 {
