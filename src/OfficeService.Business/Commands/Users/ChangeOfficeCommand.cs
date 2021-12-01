@@ -23,7 +23,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
   {
     private readonly IAccessValidator _accessValidator;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly IResponseCreator _responseCreater;
+    private readonly IResponseCreator _responseCreator;
     private readonly IChangeOfficeRequestValidator _validator;
     private readonly IDbOfficeUserMapper _mapper;
     private readonly IOfficeUserRepository _repository;
@@ -32,7 +32,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
     public ChangeOfficeCommand(
       IAccessValidator accessValidator,
       IHttpContextAccessor httpContextAccessor,
-      IResponseCreator responseCreater,
+      IResponseCreator responseCreator,
       IChangeOfficeRequestValidator validator,
       IDbOfficeUserMapper mapper,
       IOfficeUserRepository repository,
@@ -40,7 +40,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
     {
       _accessValidator = accessValidator;
       _httpContextAccessor = httpContextAccessor;
-      _responseCreater = responseCreater;
+      _responseCreator = responseCreator;
       _validator = validator;
       _mapper = mapper;
       _repository = repository;
@@ -52,14 +52,14 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
       if (_httpContextAccessor.HttpContext.GetUserId() != request.UserId
         && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
       {
-        return _responseCreater.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
+        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
       }
 
       ValidationResult validationResult = await _validator.ValidateAsync(request);
 
       if (!validationResult.IsValid)
       {
-        return _responseCreater.CreateFailureResponse<bool>(HttpStatusCode.BadRequest,
+        return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest,
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
