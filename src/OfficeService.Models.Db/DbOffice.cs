@@ -52,14 +52,6 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
         .IsRequired();
 
       builder
-        .Property(o => o.Latitude)
-        .IsRequired();
-
-      builder
-        .Property(o => o.Longitude)
-        .IsRequired();
-
-      builder
         .HasMany(o => o.Users)
         .WithOne(u => u.Office);
     }
