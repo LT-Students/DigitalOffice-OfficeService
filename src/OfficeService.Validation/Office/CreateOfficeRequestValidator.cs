@@ -8,11 +8,20 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
   {
     public CreateOfficeRequestValidator()
     {
+      RuleFor(request => request.Name)
+        .NotEmpty().WithMessage("Name must not be empty.");
+
       RuleFor(request => request.City)
-        .Must(c => !string.IsNullOrEmpty(c?.Trim())).WithMessage("City must not be empty.");
+        .NotEmpty().WithMessage("City must not be empty.");
 
       RuleFor(request => request.Address)
-        .Must(a => !string.IsNullOrEmpty(a?.Trim())).WithMessage("Address must not be empty.");
+        .NotEmpty().WithMessage("Address must not be empty.");
+
+      RuleFor(request => request.Latitude)
+        .NotEmpty().WithMessage("Latitude must not be empty.");
+
+      RuleFor(request => request.Longitude)
+        .NotEmpty().WithMessage("Longitude must not be empty.");
     }
   }
 }
