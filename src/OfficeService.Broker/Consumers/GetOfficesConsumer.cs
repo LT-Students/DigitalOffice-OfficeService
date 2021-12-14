@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
+using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
+using LT.DigitalOffice.Kernel.RedisSupport.Constants;
+using LT.DigitalOffice.Kernel.RedisSupport.Extensions;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
+using LT.DigitalOffice.Models.Broker.Models.Office;
+using LT.DigitalOffice.Models.Broker.Requests.Office;
+using LT.DigitalOffice.Models.Broker.Responses.Office;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
-using LT.DigitalOffice.Kernel.Broker;
-using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.Kernel.Helpers.Interfaces;
-using LT.DigitalOffice.UserService.Models.Dto.Configurations;
 using MassTransit;
 using Microsoft.Extensions.Options;
-using LT.DigitalOffice.Models.Broker.Requests.Office;
-using LT.DigitalOffice.Models.Broker.Models.Office;
-using LT.DigitalOffice.Models.Broker.Responses.Office;
 
 namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {
