@@ -214,7 +214,7 @@ namespace LT.DigitalOffice.OfficeService
       {
         x.AddConsumer<CreateUserOfficeConsumer>();
         x.AddConsumer<GetOfficesConsumer>();
-        x.AddConsumer<DisactivateUserConsumer>();
+        x.AddConsumer<DisactivateOfficeUserConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
           {
@@ -247,9 +247,9 @@ namespace LT.DigitalOffice.OfficeService
         ep.ConfigureConsumer<CreateUserOfficeConsumer>(context);
       });
 
-      cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivateUserEndpoint, ep =>
+      cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivateOfficeUserEndpoint, ep =>
       {
-        ep.ConfigureConsumer<DisactivateUserConsumer>(context);
+        ep.ConfigureConsumer<DisactivateOfficeUserConsumer>(context);
       });
     }
 
