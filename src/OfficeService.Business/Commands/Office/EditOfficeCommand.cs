@@ -6,6 +6,7 @@ using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interface;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
@@ -24,19 +25,22 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
     private readonly IPatchDbOfficeMapper _mapper;
     private readonly IEditOfficeRequestValidator _validator;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IGlobalCacheRepository _globalCache;
 
     public EditOfficeCommand(
       IAccessValidator accessValidator,
       IOfficeRepository officeRepository,
       IPatchDbOfficeMapper mapper,
       IEditOfficeRequestValidator validator,
-      IHttpContextAccessor httpContextAccessor)
+      IHttpContextAccessor httpContextAccessor,
+      IGlobalCacheRepository globalCache)
     {
       _accessValidator = accessValidator;
       _officeRepository = officeRepository;
       _mapper = mapper;
       _validator = validator;
       _httpContextAccessor = httpContextAccessor;
+      _globalCache = globalCache;
     }
 
     public async Task<OperationResultResponse<bool>> ExecuteAsync(Guid officeId, JsonPatchDocument<EditOfficeRequest> request)
@@ -74,6 +78,8 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 
         response.Status = OperationResultStatusType.Failed;
       }
+
+      await _globalCache.RemoveAsync(officeId);
 
       return response;
     }

@@ -20,9 +20,8 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
   public class GetOfficesConsumer : IConsumer<IGetOfficesRequest>
   {
     private readonly IOfficeUserRepository _officeUserRepository;
-    private readonly IRedisHelper _redisHelper;
     private readonly IOptions<RedisConfig> _redisConfig;
-    private readonly ICacheNotebook _cacheNotebook;
+    private readonly IGlobalCacheRepository _globalCache;
 
     private async Task<List<OfficeData>> GetOfficesAsync(List<Guid> userIds)
     {
@@ -56,22 +55,23 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 
       if (offices != null && offices.Any())
       {
-        await _redisHelper.CreateAsync(Cache.Offices, key, offices, TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
-
-        _cacheNotebook.Add(offices.Select(o => o.Id).ToList(), Cache.Offices, key);
+        await _globalCache.CreateAsync(
+          Cache.Offices,
+          key,
+          offices,
+          offices.Select(o => o.Id).ToList(),
+          TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
       }
     }
 
     public GetOfficesConsumer(
       IOfficeUserRepository officeUserRepository,
-      IRedisHelper redisHelper,
       IOptions<RedisConfig> redisConfig,
-      ICacheNotebook cacheNotebook)
+      IGlobalCacheRepository globalCache)
     {
       _officeUserRepository = officeUserRepository;
-      _redisHelper = redisHelper;
       _redisConfig = redisConfig;
-      _cacheNotebook = cacheNotebook;
+      _globalCache = globalCache;
     }
 
     public async Task Consume(ConsumeContext<IGetOfficesRequest> context)
