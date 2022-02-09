@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Text.Json.Serialization;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
@@ -146,7 +145,11 @@ namespace LT.DigitalOffice.OfficeService
     {
       UpdateDatabase(app);
 
-      FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Offices);
+      string error = FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Offices);
+      if (error is not null)
+      {
+        Log.Error(error);
+      }
 
       app.UseForwardedHeaders();
 
