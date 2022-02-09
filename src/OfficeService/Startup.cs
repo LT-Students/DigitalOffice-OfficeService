@@ -12,6 +12,7 @@ using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
 using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
 using LT.DigitalOffice.Kernel.RedisSupport.Constants;
+using LT.DigitalOffice.Kernel.RedisSupport.Helpers;
 using LT.DigitalOffice.OfficeService.Broker.Consumers;
 using LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef;
 using LT.DigitalOffice.OfficeService.Models.Dto.Configuration;
@@ -145,7 +146,7 @@ namespace LT.DigitalOffice.OfficeService
     {
       UpdateDatabase(app);
 
-      FlushRedisDatabase(redisConnStr);
+      FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Offices);
 
       app.UseForwardedHeaders();
 
@@ -262,27 +263,6 @@ namespace LT.DigitalOffice.OfficeService
       using var context = serviceScope.ServiceProvider.GetService<OfficeServiceDbContext>();
 
       context.Database.Migrate();
-    }
-
-    private void FlushRedisDatabase(string redisConnStr)
-    {
-      try
-      {
-        using (ConnectionMultiplexer cm = ConnectionMultiplexer.Connect(redisConnStr + ",allowAdmin=true,connectRetry=1,connectTimeout=2000"))
-        {
-          EndPoint[] endpoints = cm.GetEndPoints(true);
-
-          foreach (EndPoint endpoint in endpoints)
-          {
-            IServer server = cm.GetServer(endpoint);
-            server.FlushDatabase(Cache.Offices);
-          }
-        }
-      }
-      catch (Exception ex)
-      {
-        Log.Error($"Error while flushing Redis database. Text: {ex.Message}");
-      }
     }
 
     #endregion
