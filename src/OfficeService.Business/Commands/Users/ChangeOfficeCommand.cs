@@ -27,7 +27,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
     private readonly IChangeOfficeRequestValidator _validator;
     private readonly IDbOfficeUserMapper _mapper;
     private readonly IOfficeUserRepository _repository;
-    private readonly ICacheNotebook _cacheNotebook;
+    private readonly IGlobalCacheRepository _globalCache;
 
     public ChangeOfficeCommand(
       IAccessValidator accessValidator,
@@ -36,7 +36,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
       IChangeOfficeRequestValidator validator,
       IDbOfficeUserMapper mapper,
       IOfficeUserRepository repository,
-      ICacheNotebook cacheNotebook)
+      IGlobalCacheRepository globalCache)
     {
       _accessValidator = accessValidator;
       _httpContextAccessor = httpContextAccessor;
@@ -44,7 +44,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
       _validator = validator;
       _mapper = mapper;
       _repository = repository;
-      _cacheNotebook = cacheNotebook;
+      _globalCache = globalCache;
     }
 
     public async Task<OperationResultResponse<bool>> ExecuteAsync(ChangeUserOfficeRequest request)
@@ -67,14 +67,14 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
 
       if (removedOfficeId.HasValue)
       {
-        await _cacheNotebook.RemoveAsync(removedOfficeId.Value);
+        await _globalCache.RemoveAsync(removedOfficeId.Value);
       }
 
       bool result = !request.OfficeId.HasValue || await _repository.CreateAsync(_mapper.Map(request));
 
       if (result && request.OfficeId.HasValue)
       {
-        await _cacheNotebook.RemoveAsync(request.OfficeId.Value);
+        await _globalCache.RemoveAsync(request.OfficeId.Value);
       }
 
       return new()
