@@ -43,6 +43,14 @@ namespace LT.DigitalOffice.OfficeService.Data
       return await users.ToListAsync();
     }
 
+    public async Task<List<DbOfficeUser>> GetOfficeAsync(List<Guid> officesIds)
+    {
+      return await _provider.OfficesUsers.Include(x => x.Office).Where(
+        u => u.IsActive &&
+        officesIds.Contains(u.OfficeId))
+        .ToListAsync();
+    }
+
     public async Task<Guid?> RemoveAsync(Guid userId, Guid removedBy)
     {
       DbOfficeUser user = await _provider.OfficesUsers.FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
