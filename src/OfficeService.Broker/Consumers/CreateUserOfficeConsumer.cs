@@ -13,7 +13,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
     private readonly IOfficeRepository _officeRepository;
     private readonly IOfficeUserRepository _officeUserRepository;
     private readonly IDbOfficeUserMapper _officeUserMapper;
-    private readonly ICacheNotebook _cacheNotebook;
+    private readonly IGlobalCacheRepository _globalCache;
 
     private async Task<bool> CreateUserOffice(ICreateUserOfficeRequest request)
     {
@@ -29,12 +29,12 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
       IOfficeRepository officeRepository,
       IOfficeUserRepository officeUserRepository,
       IDbOfficeUserMapper officeUserMapper,
-      ICacheNotebook cacheNotebook)
+      IGlobalCacheRepository globalCache)
     {
       _officeRepository = officeRepository;
       _officeUserRepository = officeUserRepository;
       _officeUserMapper = officeUserMapper;
-      _cacheNotebook = cacheNotebook;
+      _globalCache = globalCache;
     }
 
     public async Task Consume(ConsumeContext<ICreateUserOfficeRequest> context)
@@ -47,7 +47,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 
       if (result)
       {
-        await _cacheNotebook.RemoveAsync(context.Message.OfficeId);
+        await _globalCache.RemoveAsync(context.Message.OfficeId);
       }
     }
   }
