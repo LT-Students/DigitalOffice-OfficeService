@@ -13,25 +13,21 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {
   public class FilterOfficesUsersConsumer : IConsumer<IFilterOfficesRequest>
   {
-    private readonly IOfficeUserRepository _repository;
+    private readonly IOfficeRepository _repository;
 
     private async Task<List<OfficeFilteredData>> GetOfficesDataAsync(IFilterOfficesRequest request)
     {
-      List<DbOffice> offices = (await _repository
-        .GetOfficeAsync(request.OfficesIds))
-        .Select(du => du.Office)
-        .Distinct()
-        .ToList();
+      List<DbOffice> offices = await _repository.GetAsync(request.OfficesIds);
 
       return offices.Select(o =>
           new OfficeFilteredData(
             o.Id,
             o.Name,
-            o.Users.Where(u => u.OfficeId == o.Id).Select(u => u.UserId).ToList()))
-        .ToList();
+            o.Users.Where(u => u.IsActive).Select(u => u.UserId).ToList()))
+         .ToList();
     }
     public FilterOfficesUsersConsumer(
-      IOfficeUserRepository repository)
+      IOfficeRepository repository)
     {
       _repository = repository;
     }
