@@ -15,6 +15,8 @@ namespace LT.DigitalOffice.OfficeService.Data.Interfaces
 
     Task<DbOffice> GetAsync(Guid officeId);
 
+    Task<List<DbOffice>> GetAsync(List<Guid> officesIds);
+
     Task<(List<DbOffice>, int totalCount)> FindAsync(OfficeFindFilter filter);
 
     Task<bool> EditAsync(Guid officeId, JsonPatchDocument<DbOffice> request);
