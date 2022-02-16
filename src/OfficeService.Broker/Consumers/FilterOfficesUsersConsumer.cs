@@ -23,8 +23,8 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
           new OfficeFilteredData(
             o.Id,
             o.Name,
-            o.Users.Where(u => u.IsActive).Select(u => u.UserId).ToList()))
-         .ToList();
+            o.Users.Select(u => u.UserId).ToList()))
+        .ToList();
     }
     public FilterOfficesUsersConsumer(
       IOfficeRepository repository)
@@ -38,7 +38,6 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 
       await context.RespondAsync<IOperationResult<IFilterOfficesResponse>>(
         OperationResultWrapper.CreateResponse((_) => IFilterOfficesResponse.CreateObj(officesFilteredData), context));
-
     }
   }
 }
