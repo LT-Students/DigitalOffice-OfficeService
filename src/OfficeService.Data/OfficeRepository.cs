@@ -86,5 +86,12 @@ namespace LT.DigitalOffice.OfficeService.Data
     {
       return await _provider.Offices.FirstOrDefaultAsync(x => x.Id == officeId);
     }
+
+    public async Task<List<DbOffice>> GetAsync(List<Guid> officesIds)
+    {
+      return await _provider.Offices.Where(o => officesIds.Contains(o.Id))
+        .Include(o => o.Users).Where(u => u.IsActive)
+        .ToListAsync();
+    }
   }
 }

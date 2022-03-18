@@ -8,7 +8,8 @@ namespace LT.DigitalOffice.OfficeService.Models.Dto.Configuration
   {
     public string GetOfficesEndpoint { get; set; }
     public string CreateUserOfficeEndpoint { get; set; }
-    public string DisactivateUserEndpoint { get; set; }
+    public string DisactivateOfficeUserEndpoint { get; set; }
+    public string FilterOfficesEndpoint { get; set; }
 
     [AutoInjectRequest(typeof(ICheckUsersExistence))]
     public string CheckUsersExistenceEndpoint { get; set; }
