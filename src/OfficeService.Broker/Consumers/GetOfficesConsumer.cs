@@ -37,8 +37,8 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
           o.Name,
           o.City,
           o.Name,
-          o.Latitude ?? default,
-          o.Longitude ?? default,
+          o.Latitude,
+          o.Longitude,
           o.Users.Select(u => u.UserId).ToList())).ToList();
     }
 
