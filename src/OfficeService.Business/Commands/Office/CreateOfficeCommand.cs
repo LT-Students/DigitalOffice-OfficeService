@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
@@ -52,14 +54,16 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
         };
       }
 
-      if (!_validator.ValidateCustom(request, out List<string> errors))
+      ValidationResult validationResult = await _validator.ValidateAsync(request);
+
+      if (!validationResult.IsValid)
       {
         _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
         return new OperationResultResponse<Guid>
         {
           Status = OperationResultStatusType.Failed,
-          Errors = errors
+          Errors = validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList()
         };
       }
 
