@@ -93,5 +93,15 @@ namespace LT.DigitalOffice.OfficeService.Data
         .Include(o => o.Users).Where(u => u.IsActive)
         .ToListAsync();
     }
+
+    public async Task<bool> IsNameUniqueAsync(string name)
+    {
+      return !await _provider.Offices.AnyAsync(x => x.IsActive && string.Equals(x.Name.ToLower(), name.ToLower()));
+    }
+
+    public async Task<bool> IsNameUniqueAsync(Guid officeId, string name)
+    {
+      return !await _provider.Offices.AnyAsync(x => x.Id != officeId && x.IsActive && string.Equals(x.Name.ToLower(), name.ToLower()));
+    }
   }
 }

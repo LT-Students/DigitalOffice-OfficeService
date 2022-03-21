@@ -41,7 +41,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 
     public async Task<OperationResultResponse<Guid>> ExecuteAsync(CreateOfficeRequest request)
     {
-      if (!await _accessValidator.HasRightsAsync(Rights.EditCompany))
+      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanies))
       {
         _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
 

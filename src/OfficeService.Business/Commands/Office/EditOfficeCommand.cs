@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
@@ -15,6 +16,7 @@ using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
 using LT.DigitalOffice.OfficeService.Validation.Office.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 {
@@ -22,6 +24,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
   {
     private readonly IAccessValidator _accessValidator;
     private readonly IOfficeRepository _officeRepository;
+    private readonly IOfficeUserRepository _officeUserRepository;
     private readonly IPatchDbOfficeMapper _mapper;
     private readonly IEditOfficeRequestValidator _validator;
     private readonly IHttpContextAccessor _httpContextAccessor;
@@ -30,6 +33,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
     public EditOfficeCommand(
       IAccessValidator accessValidator,
       IOfficeRepository officeRepository,
+      IOfficeUserRepository officeUserRepository,
       IPatchDbOfficeMapper mapper,
       IEditOfficeRequestValidator validator,
       IHttpContextAccessor httpContextAccessor,
@@ -37,6 +41,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
     {
       _accessValidator = accessValidator;
       _officeRepository = officeRepository;
+      _officeUserRepository = officeUserRepository;
       _mapper = mapper;
       _validator = validator;
       _httpContextAccessor = httpContextAccessor;
@@ -45,7 +50,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 
     public async Task<OperationResultResponse<bool>> ExecuteAsync(Guid officeId, JsonPatchDocument<EditOfficeRequest> request)
     {
-      if (!await _accessValidator.HasRightsAsync(Rights.EditCompany))
+      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanies))
       {
         _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
 
@@ -56,7 +61,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
         };
       }
 
-      if (!_validator.ValidateCustom(request, out List<string> errors))
+      if (!_validator.ValidateCustom((officeId, request), out List<string> errors))
       {
         _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
@@ -77,6 +82,14 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
         _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
         response.Status = OperationResultStatusType.Failed;
+      }
+
+      Operation<EditOfficeRequest> isActiveOperation = request.Operations.FirstOrDefault(
+        o => o.path.EndsWith(nameof(EditOfficeRequest.IsActive), StringComparison.OrdinalIgnoreCase));
+
+      if (isActiveOperation != default && !bool.Parse(isActiveOperation.value.ToString().Trim()))
+      {
+        await _officeUserRepository.RemoveAsync(officeId);
       }
 
       await _globalCache.RemoveAsync(officeId);

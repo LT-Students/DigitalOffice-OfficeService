@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
 using LT.DigitalOffice.OfficeService.Data.Provider;
 using LT.DigitalOffice.OfficeService.Models.Db;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Data
@@ -12,10 +14,14 @@ namespace LT.DigitalOffice.OfficeService.Data
   public class OfficeUserRepository : IOfficeUserRepository
   {
     private readonly IDataProvider _provider;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public OfficeUserRepository(IDataProvider provider)
+    public OfficeUserRepository(
+      IDataProvider provider,
+      IHttpContextAccessor httpContextAccessor)
     {
       _provider = provider;
+      _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<bool> CreateAsync(DbOfficeUser user)
@@ -58,6 +64,24 @@ namespace LT.DigitalOffice.OfficeService.Data
       }
 
       return null;
+    }
+
+    public async Task<bool> RemoveAsync(Guid officeId)
+    {
+      List<DbOfficeUser> dbUsers = await _provider.OfficesUsers.Where(x => x.OfficeId == officeId).ToListAsync();
+      DateTime modifiedAtUtc = DateTime.UtcNow;
+      Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
+
+      foreach (DbOfficeUser user in dbUsers)
+      {
+        user.IsActive = false;
+        user.ModifiedAtUtc = modifiedAtUtc;
+        user.ModifiedBy = senderId;
+      }
+
+      await _provider.SaveAsync();
+
+      return true;
     }
   }
 }

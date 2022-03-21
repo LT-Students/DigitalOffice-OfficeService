@@ -1,15 +1,24 @@
-﻿using FluentValidation;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using FluentValidation;
 using FluentValidation.Validators;
+using LT.DigitalOffice.Kernel.Validators;
+using LT.DigitalOffice.OfficeService.Data.Interfaces;
+using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
 using LT.DigitalOffice.OfficeService.Validation.Office.Interfaces;
-using LT.DigitalOffice.Kernel.Validators;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.OfficeService.Validation.Office
 {
-  public class EditOfficeRequestValidator : BaseEditRequestValidator<EditOfficeRequest>, IEditOfficeRequestValidator
+  public class EditOfficeRequestValidator : ExtendedEditRequestValidator<Guid, EditOfficeRequest>, IEditOfficeRequestValidator
   {
-    private void HandleInternalPropertyValidation(Operation<EditOfficeRequest> requestedOperation, CustomContext context)
+    private readonly Regex _nameRegex = new(@"^\s+|\s+$|\s+(?=\s)");
+
+    private void HandleInternalPropertyValidation(
+      Operation<EditOfficeRequest> requestedOperation,
+      CustomContext context)
     {
       Context = context;
       RequestedOperation = requestedOperation;
@@ -44,6 +53,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
         new()
         {
           { x => !string.IsNullOrEmpty(x.value?.ToString()), "City cannot be empty." },
+          { x => x.value?.ToString().Length < 201, "City's name is too long." }
         });
 
       AddFailureForPropertyIf(
@@ -51,7 +61,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
         x => x == OperationType.Replace,
         new()
         {
-          { x => !string.IsNullOrEmpty(x.value?.ToString().Trim()), "Address cannot be empty." },
+          { x => !string.IsNullOrEmpty(x.value?.ToString().Trim()), "Address cannot be empty." }
         });
 
       #endregion
@@ -63,16 +73,52 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
         x => x == OperationType.Replace,
         new()
         {
-          { x => bool.TryParse(x.value?.ToString(), out _), "Incorrect IsActive value." },
+          { x => bool.TryParse(x.value?.ToString(), out _), "Incorrect IsActive value." }
         });
 
       #endregion
     }
 
-    public EditOfficeRequestValidator()
+    public EditOfficeRequestValidator(
+      IOfficeRepository _officeRepository)
     {
-      RuleForEach(x => x.Operations)
+      RuleForEach(x => x.Item2.Operations)
         .Custom(HandleInternalPropertyValidation);
-    }
+
+      When(x => !string.IsNullOrWhiteSpace(
+        x.Item2.Operations.FirstOrDefault(o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase))?.value?.ToString()),
+        () =>
+        {
+          RuleFor(tuple => tuple)
+            .MustAsync(async (tuple, _) =>
+              {
+                return await _officeRepository.IsNameUniqueAsync(
+                  tuple.Item1,
+                  _nameRegex.Replace(tuple.Item2.Operations.FirstOrDefault(
+                    o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase)).value?.ToString(), ""));
+              })
+            .WithMessage("Name must be unique.");
+        });
+
+      When(x => bool.TryParse(x.Item2.Operations.FirstOrDefault(
+          o => o.path.EndsWith(nameof(EditOfficeRequest.IsActive), StringComparison.OrdinalIgnoreCase))?.value?.ToString(), out bool isActive)
+        && isActive,
+        () =>
+        {
+          RuleFor(tuple => tuple)
+            .MustAsync(async (tuple, _) =>
+            {
+              DbOffice dbOffice = await _officeRepository.GetAsync(tuple.Item1);
+
+              if (!dbOffice.IsActive && !tuple.Item2.Operations.Any(o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase)))
+              {
+                return await _officeRepository.IsNameUniqueAsync(dbOffice.Id, dbOffice.Name);
+              }
+
+              return true;
+            })
+            .WithMessage("Name must be unique.");
+        });
+    } 
   }
 }
