@@ -8,6 +8,7 @@ using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
+using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interface;
@@ -30,6 +31,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
     private readonly IEditOfficeRequestValidator _validator;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IGlobalCacheRepository _globalCache;
+    private readonly IResponseCreator _responseCreator;
 
     public EditOfficeCommand(
       IAccessValidator accessValidator,
@@ -38,7 +40,8 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
       IPatchDbOfficeMapper mapper,
       IEditOfficeRequestValidator validator,
       IHttpContextAccessor httpContextAccessor,
-      IGlobalCacheRepository globalCache)
+      IGlobalCacheRepository globalCache,
+      IResponseCreator responseCreator)
     {
       _accessValidator = accessValidator;
       _officeRepository = officeRepository;
@@ -47,32 +50,25 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
       _validator = validator;
       _httpContextAccessor = httpContextAccessor;
       _globalCache = globalCache;
+      _responseCreator = responseCreator;
     }
 
     public async Task<OperationResultResponse<bool>> ExecuteAsync(Guid officeId, JsonPatchDocument<EditOfficeRequest> request)
     {
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanies))
       {
-        _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-
-        return new OperationResultResponse<bool>
-        {
-          Status = OperationResultStatusType.Failed,
-          Errors = new() { "Not enough rights." }
-        };
+        _responseCreator.CreateFailureResponse<bool>(
+          HttpStatusCode.Forbidden,
+          new() { "Not enough rights." });
       }
 
       ValidationResult validationResult = await _validator.ValidateAsync((officeId, request));
 
       if (!validationResult.IsValid)
       {
-        _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-        return new OperationResultResponse<bool>
-        {
-          Status = OperationResultStatusType.Failed,
-          Errors = validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList()
-        };
+        _responseCreator.CreateFailureResponse<bool>(
+          HttpStatusCode.BadRequest,
+          validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList());
       }
 
       OperationResultResponse<bool> response = new();
@@ -82,9 +78,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 
       if (!response.Body)
       {
-        _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-        response.Status = OperationResultStatusType.Failed;
+        _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest);
       }
 
       Operation<EditOfficeRequest> isActiveOperation = request.Operations.FirstOrDefault(

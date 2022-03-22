@@ -40,10 +40,6 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
         .HasKey(o => o.Id);
 
       builder
-        .Property(o => o.Name)
-        .IsRequired();
-
-      builder
         .Property(o => o.City)
         .IsRequired();
 

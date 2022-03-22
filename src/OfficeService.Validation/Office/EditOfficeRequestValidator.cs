@@ -92,12 +92,12 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
           RuleFor(tuple => tuple)
             .MustAsync(async (tuple, _) =>
               {
-                return await _officeRepository.IsNameUniqueAsync(
+                return await _officeRepository.DoesNameExistAsync(
                   tuple.Item1,
                   _nameRegex.Replace(tuple.Item2.Operations.FirstOrDefault(
                     o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase)).value?.ToString(), ""));
               })
-            .WithMessage("Name must be unique.");
+            .WithMessage("Name already exists.");
         });
 
       When(x => bool.TryParse(x.Item2.Operations.FirstOrDefault(
@@ -112,12 +112,12 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
 
               if (!dbOffice.IsActive && !tuple.Item2.Operations.Any(o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase)))
               {
-                return await _officeRepository.IsNameUniqueAsync(dbOffice.Id, dbOffice.Name);
+                return await _officeRepository.DoesNameExistAsync(dbOffice.Id, dbOffice.Name);
               }
 
               return true;
             })
-            .WithMessage("Name must be unique.");
+            .WithMessage("Name already exists.");
         });
     } 
   }

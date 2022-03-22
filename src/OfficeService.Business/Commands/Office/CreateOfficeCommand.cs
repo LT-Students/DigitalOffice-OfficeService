@@ -8,6 +8,7 @@ using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
+using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interface;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
@@ -26,45 +27,40 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
     private readonly IDbOfficeMapper _mapper;
     private readonly ICreateOfficeRequestValidator _validator;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IResponseCreator _responseCreator;
 
     public CreateOfficeCommand(
       IAccessValidator accessValidator,
       IOfficeRepository officeRepository,
       IDbOfficeMapper mapper,
       ICreateOfficeRequestValidator validator,
-      IHttpContextAccessor httpContextAccessor)
+      IHttpContextAccessor httpContextAccessor,
+      IResponseCreator responseCreator)
     {
       _accessValidator = accessValidator;
       _officeRepository = officeRepository;
       _mapper = mapper;
       _validator = validator;
       _httpContextAccessor = httpContextAccessor;
+      _responseCreator = responseCreator;
     }
 
     public async Task<OperationResultResponse<Guid>> ExecuteAsync(CreateOfficeRequest request)
     {
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanies))
       {
-        _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-
-        return new OperationResultResponse<Guid>
-        {
-          Status = OperationResultStatusType.Failed,
-          Errors = new() { "Not enough rights." }
-        };
+        _responseCreator.CreateFailureResponse<Guid>(
+          HttpStatusCode.Forbidden,
+          new() { "Not enough rights." });
       }
 
       ValidationResult validationResult = await _validator.ValidateAsync(request);
 
       if (!validationResult.IsValid)
       {
-        _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-        return new OperationResultResponse<Guid>
-        {
-          Status = OperationResultStatusType.Failed,
-          Errors = validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList()
-        };
+        _responseCreator.CreateFailureResponse<Guid>(
+          HttpStatusCode.BadRequest,
+          validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList());
       }
 
       DbOffice office = _mapper.Map(request);

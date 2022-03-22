@@ -17,8 +17,8 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
       When(x => !string.IsNullOrWhiteSpace(x.Name), () =>
       {
         RuleFor(x => x.Name)
-          .MustAsync(async (name, _) => await _officeRepository.IsNameUniqueAsync(_nameRegex.Replace(name, "")))
-          .WithMessage("Name must be unique.");
+          .MustAsync(async (name, _) => await _officeRepository.DoesNameExistAsync(_nameRegex.Replace(name, "")))
+          .WithMessage("Name already exists.");
       });
 
       RuleFor(request => request.City)
