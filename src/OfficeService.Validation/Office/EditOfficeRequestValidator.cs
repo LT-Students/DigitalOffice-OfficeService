@@ -1,15 +1,24 @@
-﻿using FluentValidation;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using FluentValidation;
 using FluentValidation.Validators;
+using LT.DigitalOffice.Kernel.Validators;
+using LT.DigitalOffice.OfficeService.Data.Interfaces;
+using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
 using LT.DigitalOffice.OfficeService.Validation.Office.Interfaces;
-using LT.DigitalOffice.Kernel.Validators;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.OfficeService.Validation.Office
 {
   public class EditOfficeRequestValidator : BaseEditRequestValidator<EditOfficeRequest>, IEditOfficeRequestValidator
   {
-    private void HandleInternalPropertyValidation(Operation<EditOfficeRequest> requestedOperation, CustomContext context)
+    private readonly Regex _nameRegex = new(@"^\s+|\s+$|\s+(?=\s)");
+
+    private void HandleInternalPropertyValidation(
+      Operation<EditOfficeRequest> requestedOperation,
+      CustomContext context)
     {
       Context = context;
       RequestedOperation = requestedOperation;
@@ -44,14 +53,16 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
         new()
         {
           { x => !string.IsNullOrEmpty(x.value?.ToString()), "City cannot be empty." },
-        });
+          { x => x.value?.ToString().Length < 201, "City's name is too long." }
+        },
+        CascadeMode.Stop);
 
       AddFailureForPropertyIf(
         nameof(EditOfficeRequest.Address),
         x => x == OperationType.Replace,
         new()
         {
-          { x => !string.IsNullOrEmpty(x.value?.ToString().Trim()), "Address cannot be empty." },
+          { x => !string.IsNullOrEmpty(x.value?.ToString().Trim()), "Address cannot be empty." }
         });
 
       #endregion
@@ -63,16 +74,31 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
         x => x == OperationType.Replace,
         new()
         {
-          { x => bool.TryParse(x.value?.ToString(), out _), "Incorrect IsActive value." },
+          { x => bool.TryParse(x.value?.ToString(), out _), "Incorrect IsActive value." }
         });
 
       #endregion
     }
 
-    public EditOfficeRequestValidator()
+    public EditOfficeRequestValidator(
+      IOfficeRepository _officeRepository)
     {
       RuleForEach(x => x.Operations)
         .Custom(HandleInternalPropertyValidation);
-    }
+
+      When(x => !string.IsNullOrWhiteSpace(
+        x.Operations.FirstOrDefault(o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase))?.value?.ToString()),
+        () =>
+        {
+          RuleFor(patch => patch)
+            .MustAsync(async (patch, _) =>
+              {
+                return await _officeRepository.DoesNameExistAsync(
+                  _nameRegex.Replace(patch.Operations.FirstOrDefault(
+                    o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase)).value?.ToString(), ""));
+              })
+            .WithMessage("Name already exists.");
+        });
+    } 
   }
 }

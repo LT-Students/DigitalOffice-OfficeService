@@ -22,5 +22,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Interfaces
     Task<bool> EditAsync(Guid officeId, JsonPatchDocument<DbOffice> request);
 
     Task<bool> DoesExistAsync(Guid officeId);
+
+    Task<bool> DoesNameExistAsync(string name);
   }
 }

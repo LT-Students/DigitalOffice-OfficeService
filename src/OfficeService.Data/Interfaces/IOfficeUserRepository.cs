@@ -14,5 +14,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Interfaces
     Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds);
 
     Task<Guid?> RemoveAsync(Guid userId, Guid removedBy);
+
+    Task<bool> RemoveAsync(Guid officeId);
   }
 }
