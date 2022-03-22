@@ -99,26 +99,6 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
               })
             .WithMessage("Name already exists.");
         });
-
-      When(x => bool.TryParse(x.Item2.Operations.FirstOrDefault(
-          o => o.path.EndsWith(nameof(EditOfficeRequest.IsActive), StringComparison.OrdinalIgnoreCase))?.value?.ToString(), out bool isActive)
-        && isActive,
-        () =>
-        {
-          RuleFor(tuple => tuple)
-            .MustAsync(async (tuple, _) =>
-            {
-              DbOffice dbOffice = await _officeRepository.GetAsync(tuple.Item1);
-
-              if (!dbOffice.IsActive && !tuple.Item2.Operations.Any(o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase)))
-              {
-                return await _officeRepository.DoesNameExistAsync(dbOffice.Id, dbOffice.Name);
-              }
-
-              return true;
-            })
-            .WithMessage("Name already exists.");
-        });
     } 
   }
 }

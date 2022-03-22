@@ -96,12 +96,12 @@ namespace LT.DigitalOffice.OfficeService.Data
 
     public async Task<bool> DoesNameExistAsync(string name)
     {
-      return !await _provider.Offices.AnyAsync(x => x.IsActive && string.Equals(x.Name.ToLower(), name.ToLower()));
+      return !await _provider.Offices.AnyAsync(x => string.Equals(x.Name.ToLower(), name.ToLower()));
     }
 
     public async Task<bool> DoesNameExistAsync(Guid officeId, string name)
     {
-      return !await _provider.Offices.AnyAsync(x => x.Id != officeId && x.IsActive && string.Equals(x.Name.ToLower(), name.ToLower()));
+      return !await _provider.Offices.AnyAsync(x => x.Id != officeId && string.Equals(x.Name.ToLower(), name.ToLower()));
     }
   }
 }
