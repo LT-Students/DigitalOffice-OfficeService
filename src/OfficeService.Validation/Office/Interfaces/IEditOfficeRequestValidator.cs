@@ -7,7 +7,7 @@ using System;
 namespace LT.DigitalOffice.OfficeService.Validation.Office.Interfaces
 {
   [AutoInject]
-  public interface IEditOfficeRequestValidator : IValidator<(Guid officeId, JsonPatchDocument<EditOfficeRequest> request)>
+  public interface IEditOfficeRequestValidator : IValidator<JsonPatchDocument<EditOfficeRequest>>
   {
   }
 }

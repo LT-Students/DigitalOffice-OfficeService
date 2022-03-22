@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.OfficeService.Validation.Office
 {
-  public class EditOfficeRequestValidator : ExtendedEditRequestValidator<Guid, EditOfficeRequest>, IEditOfficeRequestValidator
+  public class EditOfficeRequestValidator : BaseEditRequestValidator<EditOfficeRequest>, IEditOfficeRequestValidator
   {
     private readonly Regex _nameRegex = new(@"^\s+|\s+$|\s+(?=\s)");
 
@@ -54,7 +54,8 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
         {
           { x => !string.IsNullOrEmpty(x.value?.ToString()), "City cannot be empty." },
           { x => x.value?.ToString().Length < 201, "City's name is too long." }
-        });
+        },
+        CascadeMode.Stop);
 
       AddFailureForPropertyIf(
         nameof(EditOfficeRequest.Address),
@@ -82,19 +83,18 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
     public EditOfficeRequestValidator(
       IOfficeRepository _officeRepository)
     {
-      RuleForEach(x => x.Item2.Operations)
+      RuleForEach(x => x.Operations)
         .Custom(HandleInternalPropertyValidation);
 
       When(x => !string.IsNullOrWhiteSpace(
-        x.Item2.Operations.FirstOrDefault(o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase))?.value?.ToString()),
+        x.Operations.FirstOrDefault(o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase))?.value?.ToString()),
         () =>
         {
-          RuleFor(tuple => tuple)
-            .MustAsync(async (tuple, _) =>
+          RuleFor(patch => patch)
+            .MustAsync(async (patch, _) =>
               {
                 return await _officeRepository.DoesNameExistAsync(
-                  tuple.Item1,
-                  _nameRegex.Replace(tuple.Item2.Operations.FirstOrDefault(
+                  _nameRegex.Replace(patch.Operations.FirstOrDefault(
                     o => o.path.EndsWith(nameof(EditOfficeRequest.Name), StringComparison.OrdinalIgnoreCase)).value?.ToString(), ""));
               })
             .WithMessage("Name already exists.");

@@ -50,8 +50,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanies))
       {
         _responseCreator.CreateFailureResponse<Guid>(
-          HttpStatusCode.Forbidden,
-          new() { "Not enough rights." });
+          HttpStatusCode.Forbidden);
       }
 
       ValidationResult validationResult = await _validator.ValidateAsync(request);
