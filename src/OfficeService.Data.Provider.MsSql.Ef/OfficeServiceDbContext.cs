@@ -17,6 +17,8 @@ namespace LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef
 
     public DbSet<DbOffice> Offices { get; set; }
     public DbSet<DbOfficeUser> OfficesUsers { get; set; }
+    public DbSet<DbWorkspace> Workspaces { get; set; }
+    public DbSet<DbWorkspaceType> WorkspaceTypes { get; set; }
 
     // Fluent API is written here.
     protected override void OnModelCreating(ModelBuilder modelBuilder)

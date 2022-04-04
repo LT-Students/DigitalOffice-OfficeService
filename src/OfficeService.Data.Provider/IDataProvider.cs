@@ -11,5 +11,8 @@ namespace LT.DigitalOffice.OfficeService.Data.Provider
   {
     DbSet<DbOffice> Offices { get; set; }
     DbSet<DbOfficeUser> OfficesUsers { get; set; }
+
+    DbSet<DbWorkspace> Workspaces { get; set; }
+    DbSet<DbWorkspaceType> WorkspaceTypes { get; set; }
   }
 }
