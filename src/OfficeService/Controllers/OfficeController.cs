@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interface;
+using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Dto.Models;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
 using LT.DigitalOffice.Kernel.Responses;
