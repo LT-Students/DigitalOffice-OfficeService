@@ -3,8 +3,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
+using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Validators.Interfaces;
 using LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType.Interfaces;
@@ -24,18 +24,21 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
     private readonly IWorkspaceTypeInfoMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBaseFindFilterValidator _baseFindValidator;
+    private readonly IResponseCreator _responseCreator;
+
 
     public FindWorkspaceTypesCommand(
       IWorkspaceTypeRepository workspaceTypeRepository,
       IWorkspaceTypeInfoMapper mapper,
       IHttpContextAccessor httpContextAccessor,
-      IBaseFindFilterValidator baseFindValidator
-      )
+      IBaseFindFilterValidator baseFindValidator,
+      IResponseCreator responseCreator)
     {
       _workspaceTypeRepository = workspaceTypeRepository;
       _mapper = mapper;
       _httpContextAccessor = httpContextAccessor;
       _baseFindValidator = baseFindValidator;
+      _responseCreator = responseCreator;
     }
 
     public async Task<FindResultResponse<WorkspaceTypeInfo>> ExecuteAsync(WorkspaceTypeFindFilter filter)
@@ -44,11 +47,9 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
 
       if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors))
       {
-        _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
-        response.Status = OperationResultStatusType.Failed;
-        response.Errors = errors;
-        return response;
+        return _responseCreator.CreateFailureFindResponse<WorkspaceTypeInfo>(
+          HttpStatusCode.BadRequest,
+          errors);
       }
 
       (List<DbWorkspaceType> workspaceTypes, int totalCount) = await _workspaceTypeRepository.FindAsync(filter);
@@ -58,7 +59,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
         .ToList();
 
       response.TotalCount = totalCount;
-      response.Status = OperationResultStatusType.FullSuccess;
 
       return response;
     }

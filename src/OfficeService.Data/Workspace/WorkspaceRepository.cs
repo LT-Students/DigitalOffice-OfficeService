@@ -29,11 +29,11 @@ namespace LT.DigitalOffice.OfficeService.Data.Workspace
       _httpContextAccessor = httpContextAccessor;
       _logger = logger;
     }
+
     public async Task CreateAsync(DbWorkspace workspace)
     {
       if (workspace == null)
       {
-        _logger.LogWarning(new ArgumentNullException(nameof(workspace)).Message);
         return;
       }
 

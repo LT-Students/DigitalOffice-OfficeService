@@ -30,11 +30,11 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType
       _httpContextAccessor = httpContextAccessor;
       _logger = logger;
     }
+
     public async Task CreateAsync(DbWorkspaceType workspaceType)
     {
       if (workspaceType == null)
       {
-        _logger.LogWarning(new ArgumentNullException(nameof(workspaceType)).Message);
         return;
       }
 

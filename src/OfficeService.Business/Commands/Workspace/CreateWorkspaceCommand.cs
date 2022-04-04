@@ -3,6 +3,8 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
+using FluentValidation.Results;
+
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.Enums;
@@ -13,6 +15,7 @@ using LT.DigitalOffice.OfficeService.Data.Workspace.Interfaces;
 using LT.DigitalOffice.OfficeService.Mappers.Db.Workspace.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Workspace;
 using LT.DigitalOffice.OfficeService.Validation.Workspace.Interfaces;
+
 using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace
@@ -41,15 +44,18 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace
       _httpContextAccessor = httpContextAccessor;
       _responseCreator = responseCreator;
     }
+
     public async Task<OperationResultResponse<Guid>> ExecuteAsync(CreateWorkspaceRequest request)
     {
-      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanyData))
+      if (!await _accessValidator.HasRightsAsync(
+            Rights.AddEditRemoveCompanyData, 
+            Rights.AddEditRemoveCompanies))
       {
         _responseCreator.CreateFailureResponse<Guid>(
           HttpStatusCode.Forbidden);
       }
 
-      var validationResult = await _requestValidator.ValidateAsync(request);
+      ValidationResult validationResult = await _requestValidator.ValidateAsync(request);
 
       if (!validationResult.IsValid)
       {
@@ -58,15 +64,13 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace
           validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList());
       }
 
-      var workspace = _mapper.Map(request);
-      await _repository.CreateAsync(workspace);
+      await _repository.CreateAsync(_mapper.Map(request));
 
       _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
       return new OperationResultResponse<Guid>
       {
-        Status = OperationResultStatusType.FullSuccess, 
-        Body = workspace.Id
+        Body = _mapper.Map(request).Id
       };
     }
   }
