@@ -44,14 +44,14 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace
 
     public async Task<FindResultResponse<WorkspaceInfo>> ExecuteAsync(WorkspaceFindFilter filter)
     {
-      FindResultResponse<WorkspaceInfo> response = new();
-
       if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors))
       {
         return _responseCreator.CreateFailureFindResponse<WorkspaceInfo>(
           HttpStatusCode.BadRequest,
           errors);
       }
+
+      FindResultResponse<WorkspaceInfo> response = new();
 
       (List<DbWorkspace> workspaces, int totalCount) = await _workspaceRepository.FindAsync(filter);
 

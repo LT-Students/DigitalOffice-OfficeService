@@ -12,6 +12,8 @@ namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.Workspace
 
     public string Description { get; set; }
 
+    public bool IsBookable { get; set; }
+
     public Guid WorkspaceTypeId { get; set; }
 
     public CreateWorkspaceTypeRequest WorkspaceType { get; set; }

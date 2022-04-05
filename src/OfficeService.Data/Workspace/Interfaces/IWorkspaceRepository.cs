@@ -11,7 +11,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Workspace.Interfaces
   [AutoInject]
   public interface IWorkspaceRepository
   {
-    Task CreateAsync(DbWorkspace workspace);
+    Task<Guid?> CreateAsync(DbWorkspace workspace);
 
     Task<DbWorkspace> GetAsync(Guid workspaceId);
 

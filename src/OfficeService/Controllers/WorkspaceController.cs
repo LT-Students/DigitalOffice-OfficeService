@@ -16,7 +16,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
   public class WorkspaceController : ControllerBase
   {
     [HttpPost("create")]
-    public async Task<OperationResultResponse<Guid>> CreateAsync(
+    public async Task<OperationResultResponse<Guid?>> CreateAsync(
       [FromServices] ICreateWorkspaceCommand  command,
       [FromBody] CreateWorkspaceRequest request)
     {

@@ -44,7 +44,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
       _responseCreator = responseCreator;
     }
 
-    public async Task<OperationResultResponse<Guid>> ExecuteAsync(CreateWorkspaceTypeRequest request)
+    public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateWorkspaceTypeRequest request)
     {
       if (!await _accessValidator.HasRightsAsync(
             Rights.AddEditRemoveCompanyData,
@@ -58,19 +58,23 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
 
       if (!validationResult.IsValid)
       {
-        _responseCreator.CreateFailureResponse<Guid>(
+        return _responseCreator.CreateFailureResponse<Guid?>(
           HttpStatusCode.BadRequest,
           validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList());
       }
 
-      await _repository.CreateAsync(_mapper.Map(request));
+      OperationResultResponse<Guid?> response = new();
+
+      response.Body = await _repository.CreateAsync(_mapper.Map(request));
 
       _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-      return new OperationResultResponse<Guid>
+      if (response.Body == default)
       {
-        Body = _mapper.Map(request).Id
-      };
+        response = _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest);
+      }
+
+      return response;
     }
   }
 }

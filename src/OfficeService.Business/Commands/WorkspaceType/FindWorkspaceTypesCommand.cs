@@ -26,7 +26,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
     private readonly IBaseFindFilterValidator _baseFindValidator;
     private readonly IResponseCreator _responseCreator;
 
-
     public FindWorkspaceTypesCommand(
       IWorkspaceTypeRepository workspaceTypeRepository,
       IWorkspaceTypeInfoMapper mapper,

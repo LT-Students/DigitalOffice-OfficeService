@@ -31,15 +31,17 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType
       _logger = logger;
     }
 
-    public async Task CreateAsync(DbWorkspaceType workspaceType)
+    public async Task<Guid?> CreateAsync(DbWorkspaceType workspaceType)
     {
-      if (workspaceType == null)
+      if (workspaceType is null)
       {
-        return;
+        return null;
       }
 
       _provider.WorkspaceTypes.Add(workspaceType);
       await _provider.SaveAsync();
+
+      return workspaceType.Id;
     }
 
     public async Task<DbWorkspaceType> GetAsync(Guid workspaceTypeId)

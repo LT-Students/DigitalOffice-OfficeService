@@ -10,6 +10,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType.Interfa
   [AutoInject]
   public interface ICreateWorkspaceTypeCommand
   {
-    Task<OperationResultResponse<Guid>> ExecuteAsync(CreateWorkspaceTypeRequest request);
+    Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateWorkspaceTypeRequest request);
   }
 }

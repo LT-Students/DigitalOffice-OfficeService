@@ -35,7 +35,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db.Workspace
         Name = !string.IsNullOrWhiteSpace(request.Name) ? _nameRegex.Replace(request.Name, "") : null,
         WorkspaceTypeId = request.WorkspaceTypeId,
         Description = request.Description.Trim(),
-        IsBookable = true,
+        IsBookable = request.IsBookable,
         CreatedAtUtc = DateTime.UtcNow,
         CreatedBy = _httpContextAccessor.HttpContext.GetUserId(),
         IsActive = true

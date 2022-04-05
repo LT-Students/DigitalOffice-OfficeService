@@ -7,7 +7,6 @@ using FluentValidation.Results;
 
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.OfficeService.Business.Commands.Workspace.Interfaces;
@@ -45,7 +44,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace
       _responseCreator = responseCreator;
     }
 
-    public async Task<OperationResultResponse<Guid>> ExecuteAsync(CreateWorkspaceRequest request)
+    public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateWorkspaceRequest request)
     {
       if (!await _accessValidator.HasRightsAsync(
             Rights.AddEditRemoveCompanyData, 
@@ -59,19 +58,23 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace
 
       if (!validationResult.IsValid)
       {
-        _responseCreator.CreateFailureResponse<Guid>(
+        _responseCreator.CreateFailureResponse<Guid?>(
           HttpStatusCode.BadRequest,
           validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList());
       }
 
-      await _repository.CreateAsync(_mapper.Map(request));
+      OperationResultResponse<Guid?> response = new();
+
+      response.Body = await _repository.CreateAsync(_mapper.Map(request));
 
       _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-      return new OperationResultResponse<Guid>
+      if (response.Body == default)
       {
-        Body = _mapper.Map(request).Id
-      };
+        response = _responseCreator.CreateFailureResponse<Guid?>(HttpStatusCode.BadRequest);
+      }
+
+      return response;
     }
   }
 }
