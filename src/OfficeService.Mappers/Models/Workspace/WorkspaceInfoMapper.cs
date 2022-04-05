@@ -1,4 +1,5 @@
 ﻿using LT.DigitalOffice.OfficeService.Mappers.Models.Workspace.Interfaces;
+using LT.DigitalOffice.OfficeService.Mappers.Models.WorkspaceType.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Models.Workspace;
 
@@ -6,6 +7,13 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Models.Workspace
 {
   public class WorkspaceInfoMapper : IWorkspaceInfoMapper
   {
+    private readonly IWorkspaceTypeInfoMapper _workspaceTypeInfoMapper;
+
+    public WorkspaceInfoMapper(IWorkspaceTypeInfoMapper workspaceTypeInfoMapper)
+    {
+      _workspaceTypeInfoMapper = workspaceTypeInfoMapper;
+    }
+
     public WorkspaceInfo Map(DbWorkspace workspace)
     {
       if (workspace == null)
@@ -17,10 +25,10 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Models.Workspace
       {
         Id = workspace.Id,
         ParentId = workspace.ParentId,
-        WorkspaceTypeId = workspace.WorkspaceTypeId,
         Name = workspace.Name,
         Description = workspace.Description,
-        IsActive = workspace.IsActive
+        IsActive = workspace.IsActive,
+        WorkspaceType = this._workspaceTypeInfoMapper.Map(workspace.WorkspaceType)
       };
     }
   }

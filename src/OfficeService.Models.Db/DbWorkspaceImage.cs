@@ -7,13 +7,15 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 {
   public class DbWorkspaceImage
   {
-    public const string TableName = "WorkspaceImages";
+    public const string TableName = "WorkspacesImages";
 
     public Guid Id { get; set; }
 
     public Guid WorkspaceId { get; set; }
 
     public Guid ImageId { get; set; }
+
+    public bool IsFrontImage { get; set; }
 
     public DbWorkspace Workspace { get; set; }
   }

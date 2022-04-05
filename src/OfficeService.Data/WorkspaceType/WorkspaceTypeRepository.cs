@@ -38,7 +38,7 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType
         return null;
       }
 
-      _provider.WorkspaceTypes.Add(workspaceType);
+      _provider.WorkspacesTypes.Add(workspaceType);
       await _provider.SaveAsync();
 
       return workspaceType.Id;
@@ -46,12 +46,12 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType
 
     public async Task<DbWorkspaceType> GetAsync(Guid workspaceTypeId)
     {
-      return await _provider.WorkspaceTypes.FirstOrDefaultAsync(x => x.Id == workspaceTypeId);
+      return await _provider.WorkspacesTypes.FirstOrDefaultAsync(x => x.Id == workspaceTypeId);
     }
 
     public async Task<List<DbWorkspaceType>> GetAsync(List<Guid> workspaceTypeIds)
     {
-      return await _provider.WorkspaceTypes
+      return await _provider.WorkspacesTypes
         .Where(o => workspaceTypeIds.Contains(o.Id))
         .ToListAsync();
     }
@@ -63,7 +63,7 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType
         return (null, 0);
       }
 
-      IQueryable<DbWorkspaceType> dbWorkspaceTypes = _provider.WorkspaceTypes
+      IQueryable<DbWorkspaceType> dbWorkspaceTypes = _provider.WorkspacesTypes
         .AsQueryable();
 
       if (!filter.IncludeDeactivated)

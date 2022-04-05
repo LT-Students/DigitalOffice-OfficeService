@@ -22,10 +22,6 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 
     public bool IsBookable { get; set; }
 
-    public Guid? ImageId { get; set; }
-
-    public bool IsActive { get; set; }
-
     public Guid CreatedBy { get; set; }
 
     public DateTime CreatedAtUtc { get; set; }
@@ -33,6 +29,8 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
     public Guid? ModifiedBy { get; set; }
 
     public DateTime? ModifiedAtUtc { get; set; }
+
+    public bool IsActive { get; set; }
 
     [IgnoreParse]
     public DbWorkspaceType WorkspaceType { get; set; }
