@@ -11,8 +11,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Workspace
     public CreateWorkspaceRequestValidator(IWorkspaceRepository repository)
     {
       RuleFor(w => w.Name)
-        .NotEmpty().WithMessage("Workspace name cannot be empty")
-        .NotNull().WithMessage("Workspace name cannot be null");
+        .NotEmpty().WithMessage("Workspace name cannot be empty");
     }
   }
 }

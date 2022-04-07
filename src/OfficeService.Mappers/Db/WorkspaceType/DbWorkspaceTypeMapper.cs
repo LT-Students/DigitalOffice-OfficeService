@@ -35,7 +35,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db.WorkspaceType
         Description = request.Description.Trim(),
         StartTime = request.StartTime,
         EndTime = request.EndTime,
-        BookingRule = request.BookingRule,
+        BookingRule = (int)request.BookingRule,
         CreatedAtUtc = DateTime.UtcNow,
         CreatedBy = _httpContextAccessor.HttpContext.GetUserId(),
         IsActive = true

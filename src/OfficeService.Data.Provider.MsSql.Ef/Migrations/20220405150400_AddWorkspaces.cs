@@ -22,7 +22,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         columns: table => new
         {
           Id = table.Column<Guid>(nullable: false),
-          ParentId = table.Column<Guid>(nullable: true),
+          ParentId = table.Column<Guid?>(nullable: true),
           Name = table.Column<string>(nullable: false),
           WorkspaceTypeId = table.Column<Guid>(nullable: false),
           Description = table.Column<string>(nullable: true),
@@ -48,8 +48,8 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
           Id = table.Column<Guid>(nullable: false),
           Name = table.Column<string>(nullable: false),
           Description = table.Column<string>(nullable: true),
-          StartTime = table.Column<TimeOnly>(nullable: true),
-          EndTime = table.Column<TimeOnly>(nullable: true),
+          StartTime = table.Column<string>(nullable: true),
+          EndTime = table.Column<string>(nullable: true),
           BookingRule = table.Column<int>(nullable: false),
           CreatedBy = table.Column<Guid>(nullable: false),
           CreatedAtUtc = table.Column<DateTime>(nullable: false),
@@ -87,7 +87,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         columns: table => new
         {
           Id = table.Column<Guid>(nullable: false),
-          WorkspaceID = table.Column<Guid>(nullable: false),
+          WorkspaceId = table.Column<Guid>(nullable: false),
           TagId = table.Column<Guid>(nullable: false),
           CreatedBy = table.Column<Guid>(nullable: false),
           CreatedAtUtc = table.Column<DateTime>(nullable: false),
@@ -105,7 +105,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         columns: table => new
         {
           Id = table.Column<Guid>(nullable: false),
-          WorkspaceID = table.Column<Guid>(nullable: false),
+          WorkspaceId = table.Column<Guid>(nullable: false),
           ImageId = table.Column<Guid>(nullable: false),
           IsFrontImage = table.Column<bool>(nullable: false),
         },
@@ -113,6 +113,14 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         {
           table.PrimaryKey("PK_WorkspacesImages", w => w.Id);
         });
+    }
+
+    private void CreateConstraints(MigrationBuilder migrationBuilder)
+    {
+      migrationBuilder.AddUniqueConstraint(
+        name: "UX_Name_Unique",
+        table: DbWorkspace.TableName,
+        column: nameof(DbWorkspace.Name));
     }
 
     #endregion
@@ -124,10 +132,12 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
       CreateTagsTable(migrationBuilder);
       CreateWorkspacesTagsTable(migrationBuilder);
       CreateWorkspacesImagesTable(migrationBuilder);
+      //CreateConstraints(migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
+      //migrationBuilder.DropUniqueConstraint("UX_Name_Unique", DbWorkspace.TableName);
       migrationBuilder.DropTable(DbWorkspace.TableName);
       migrationBuilder.DropTable(DbWorkspaceType.TableName);
       migrationBuilder.DropTable(DbTag.TableName);

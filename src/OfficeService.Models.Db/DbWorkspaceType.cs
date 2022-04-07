@@ -7,7 +7,7 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 {
   public class DbWorkspaceType
   {
-    public const string TableName = "WorkspaceTypes";
+    public const string TableName = "WorkspacesTypes";
 
     public Guid Id { get; set; }
 
@@ -15,9 +15,9 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 
     public string Description { get; set; }
 
-    public TimeOnly? StartTime { get; set; }
+    public DateTime? StartTime { get; set; }
 
-    public TimeOnly? EndTime { get; set; }
+    public DateTime? EndTime { get; set; }
 
     public int BookingRule { get; set; }
 
@@ -41,10 +41,6 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 
       builder
         .HasKey(wt => wt.Id);
-
-      builder
-        .Property(wt => wt.BookingRule)
-        .IsRequired();
     }
   }
 }

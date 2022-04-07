@@ -28,7 +28,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Models.Workspace
         Name = workspace.Name,
         Description = workspace.Description,
         IsActive = workspace.IsActive,
-        WorkspaceType = this._workspaceTypeInfoMapper.Map(workspace.WorkspaceType)
+        WorkspaceType = _workspaceTypeInfoMapper.Map(workspace.WorkspaceType)
       };
     }
   }

@@ -1,5 +1,6 @@
 ﻿using LT.DigitalOffice.OfficeService.Mappers.Models.WorkspaceType.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
+using LT.DigitalOffice.OfficeService.Models.Dto.Enums.Workspace;
 using LT.DigitalOffice.OfficeService.Models.Dto.Models.Workspace;
 
 namespace LT.DigitalOffice.OfficeService.Mappers.Models.WorkspaceType
@@ -19,7 +20,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Models.WorkspaceType
         Description = workspaceType.Description,
         StartTime = workspaceType.StartTime,
         EndTime = workspaceType.EndTime,
-        BookingRule = workspaceType.BookingRule,
+        BookingRule = (BookingRule)workspaceType.BookingRule,
         IsActive = workspaceType.IsActive
       };
     }

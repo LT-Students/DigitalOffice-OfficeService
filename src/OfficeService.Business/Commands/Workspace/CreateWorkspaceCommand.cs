@@ -50,7 +50,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace
             Rights.AddEditRemoveCompanyData, 
             Rights.AddEditRemoveCompanies))
       {
-        _responseCreator.CreateFailureResponse<Guid>(
+        return _responseCreator.CreateFailureResponse<Guid?>(
           HttpStatusCode.Forbidden);
       }
 
@@ -58,7 +58,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace
 
       if (!validationResult.IsValid)
       {
-        _responseCreator.CreateFailureResponse<Guid?>(
+        return _responseCreator.CreateFailureResponse<Guid?>(
           HttpStatusCode.BadRequest,
           validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList());
       }

@@ -1,5 +1,7 @@
 ﻿using System;
 
+using LT.DigitalOffice.OfficeService.Models.Dto.Enums.Workspace;
+
 namespace LT.DigitalOffice.OfficeService.Models.Dto.Models.Workspace
 {
   public record WorkspaceTypeInfo
@@ -10,11 +12,11 @@ namespace LT.DigitalOffice.OfficeService.Models.Dto.Models.Workspace
 
     public string Description { get; set; }
 
-    public TimeOnly? StartTime { get; set; }
+    public DateTime? StartTime { get; set; }
 
-    public TimeOnly? EndTime { get; set; }
+    public DateTime? EndTime { get; set; }
 
-    public int BookingRule { get; set; }
+    public BookingRule BookingRule { get; set; }
 
     public bool IsActive { get; set; }
   }

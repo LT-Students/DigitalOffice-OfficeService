@@ -42,14 +42,14 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
 
     public async Task<FindResultResponse<WorkspaceTypeInfo>> ExecuteAsync(WorkspaceTypeFindFilter filter)
     {
-      FindResultResponse<WorkspaceTypeInfo> response = new();
-
       if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors))
       {
         return _responseCreator.CreateFailureFindResponse<WorkspaceTypeInfo>(
           HttpStatusCode.BadRequest,
           errors);
       }
+
+      FindResultResponse<WorkspaceTypeInfo> response = new();
 
       (List<DbWorkspaceType> workspaceTypes, int totalCount) = await _workspaceTypeRepository.FindAsync(filter);
 

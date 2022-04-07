@@ -16,7 +16,7 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 
     public string Name { get; set; }
 
-    public Guid WorkspaceTypeId { get; set; }
+    public Guid? WorkspaceTypeId { get; set; }
 
     public string Description { get; set; }
 
@@ -54,10 +54,6 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 
       builder
         .Property(w => w.Name)
-        .IsRequired();
-
-      builder
-        .Property(w => w.WorkspaceTypeId)
         .IsRequired();
 
       builder
