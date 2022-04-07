@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using LT.DigitalOffice.Kernel.BrokerSupport.Attributes.ParseEntity;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -32,7 +34,6 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 
     public bool IsActive { get; set; }
 
-    [IgnoreParse]
     public DbWorkspaceType WorkspaceType { get; set; }
 
     [IgnoreParse]
@@ -55,6 +56,9 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
       builder
         .Property(w => w.Name)
         .IsRequired();
+
+      builder
+        .HasOne(w => w.WorkspaceType);
 
       builder
         .HasMany(w => w.WorkspacesTags)

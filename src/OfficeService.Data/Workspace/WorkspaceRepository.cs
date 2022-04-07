@@ -59,7 +59,12 @@ namespace LT.DigitalOffice.OfficeService.Data.Workspace
       }
 
       return (
-        await dbWorkspaces.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbWorkspaces.CountAsync());
+        await dbWorkspaces
+          .Include(w => w.WorkspaceType)
+          .Skip(filter.SkipCount)
+          .Take(filter.TakeCount)
+          .ToListAsync(), 
+        await dbWorkspaces.CountAsync());
     }
   }
 }

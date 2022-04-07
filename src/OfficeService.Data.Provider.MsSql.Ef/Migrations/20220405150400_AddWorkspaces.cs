@@ -23,7 +23,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         {
           Id = table.Column<Guid>(nullable: false),
           ParentId = table.Column<Guid?>(nullable: true),
-          Name = table.Column<string>(nullable: false),
+          Name = table.Column<string>(nullable: false, maxLength: 100),
           WorkspaceTypeId = table.Column<Guid>(nullable: false),
           Description = table.Column<string>(nullable: true),
           IsBookable = table.Column<bool>(nullable: false),
@@ -37,6 +37,11 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         {
           table.PrimaryKey("PK_Workspaces", w => w.Id);
         });
+
+      migrationBuilder.AddUniqueConstraint(
+        name: "UX_Name_Unique",
+        table: DbWorkspace.TableName,
+        column: nameof(DbWorkspace.Name));
     }
 
     private void CreateWorkspacesTypesTable(MigrationBuilder migrationBuilder)
@@ -115,14 +120,6 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         });
     }
 
-    private void CreateConstraints(MigrationBuilder migrationBuilder)
-    {
-      migrationBuilder.AddUniqueConstraint(
-        name: "UX_Name_Unique",
-        table: DbWorkspace.TableName,
-        column: nameof(DbWorkspace.Name));
-    }
-
     #endregion
 
     protected override void Up(MigrationBuilder migrationBuilder)
@@ -132,12 +129,10 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
       CreateTagsTable(migrationBuilder);
       CreateWorkspacesTagsTable(migrationBuilder);
       CreateWorkspacesImagesTable(migrationBuilder);
-      //CreateConstraints(migrationBuilder);
     }
 
     protected override void Down(MigrationBuilder migrationBuilder)
     {
-      //migrationBuilder.DropUniqueConstraint("UX_Name_Unique", DbWorkspace.TableName);
       migrationBuilder.DropTable(DbWorkspace.TableName);
       migrationBuilder.DropTable(DbWorkspaceType.TableName);
       migrationBuilder.DropTable(DbTag.TableName);
