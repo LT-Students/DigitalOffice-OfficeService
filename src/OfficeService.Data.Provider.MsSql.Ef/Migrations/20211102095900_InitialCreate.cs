@@ -20,7 +20,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         columns: table => new
         {
           Id = table.Column<Guid>(nullable: false),
-          Name = table.Column<string>(nullable: false),
+          Name = table.Column<string>(nullable: true),
           City = table.Column<string>(nullable: false),
           Address = table.Column<string>(nullable: false),
           Latitude = table.Column<double>(nullable: true),
