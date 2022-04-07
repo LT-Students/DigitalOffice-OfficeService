@@ -93,5 +93,10 @@ namespace LT.DigitalOffice.OfficeService.Data
         .Include(o => o.Users).Where(u => u.IsActive)
         .ToListAsync();
     }
+
+    public async Task<bool> DoesNameExistAsync(string name)
+    {
+      return !await _provider.Offices.AnyAsync(x => string.Equals(x.Name.ToLower(), name.ToLower()));
+    }
   }
 }
