@@ -13,10 +13,6 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType.Interfaces
   {
     Task<Guid?> CreateAsync(DbWorkspaceType workspaceType);
 
-    Task<DbWorkspaceType> GetAsync(Guid workspaceTypeId);
-
-    Task<List<DbWorkspaceType>> GetAsync(List<Guid> workspaceTypeIds);
-
     Task<(List<DbWorkspaceType>, int totalCount)> FindAsync(WorkspaceTypeFindFilter filter);
   }
 }

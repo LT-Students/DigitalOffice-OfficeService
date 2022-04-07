@@ -44,18 +44,6 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType
       return workspaceType.Id;
     }
 
-    public async Task<DbWorkspaceType> GetAsync(Guid workspaceTypeId)
-    {
-      return await _provider.WorkspacesTypes.FirstOrDefaultAsync(x => x.Id == workspaceTypeId);
-    }
-
-    public async Task<List<DbWorkspaceType>> GetAsync(List<Guid> workspaceTypeIds)
-    {
-      return await _provider.WorkspacesTypes
-        .Where(o => workspaceTypeIds.Contains(o.Id))
-        .ToListAsync();
-    }
-
     public async Task<(List<DbWorkspaceType>, int totalCount)> FindAsync(WorkspaceTypeFindFilter filter)
     {
       if (filter == null)
