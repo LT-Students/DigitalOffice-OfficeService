@@ -11,6 +11,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.WorkspaceType
     public CreateWorkspaceTypeRequestValidator(IWorkspaceTypeRepository repository)
     {
       RuleFor(wt => wt.Name)
+        .Cascade(CascadeMode.Stop)
         .NotEmpty().WithMessage("Workspace type name cannot be empty")
         .MaximumLength(100).WithMessage("Workspace type name length cannot be more than 100 characters");
 

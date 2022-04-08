@@ -16,7 +16,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Models.Workspace
 
     public WorkspaceInfo Map(DbWorkspace workspace)
     {
-      if (workspace == null)
+      if (workspace is null)
       {
         return null;
       }

@@ -23,7 +23,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db.Workspace
 
     public DbWorkspace Map(CreateWorkspaceRequest request)
     {
-      if (request == null)
+      if (request is null)
       {
         return null;
       }

@@ -45,7 +45,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Workspace
 
     public async Task<(List<DbWorkspace>, int totalCount)> FindAsync(WorkspaceFindFilter filter)
     {
-      if (filter == null)
+      if (filter is null)
       {
         return (null, 0);
       }

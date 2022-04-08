@@ -9,13 +9,14 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Models.WorkspaceType
   {
     public WorkspaceTypeInfo Map(DbWorkspaceType workspaceType)
     {
-      if (workspaceType == null)
+      if (workspaceType is null)
       {
         return null;
       }
 
       return new WorkspaceTypeInfo
       {
+        Id = workspaceType.Id,
         Name = workspaceType.Name,
         Description = workspaceType.Description,
         StartTime = workspaceType.StartTime,

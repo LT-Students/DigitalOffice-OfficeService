@@ -23,7 +23,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         {
           Id = table.Column<Guid>(nullable: false),
           ParentId = table.Column<Guid?>(nullable: true),
-          Name = table.Column<string>(nullable: false, maxLength: 100),
+          Name = table.Column<string>(nullable: false),
           WorkspaceTypeId = table.Column<Guid>(nullable: false),
           Description = table.Column<string>(nullable: true),
           IsBookable = table.Column<bool>(nullable: false),
@@ -37,11 +37,6 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         {
           table.PrimaryKey("PK_Workspaces", w => w.Id);
         });
-
-      migrationBuilder.AddUniqueConstraint(
-        name: "UX_Name_Unique",
-        table: DbWorkspace.TableName,
-        column: nameof(DbWorkspace.Name));
     }
 
     private void CreateWorkspacesTypesTable(MigrationBuilder migrationBuilder)
@@ -51,7 +46,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         columns: table => new
         {
           Id = table.Column<Guid>(nullable: false),
-          Name = table.Column<string>(nullable: false),
+          Name = table.Column<string>(nullable: false, maxLength: 100),
           Description = table.Column<string>(nullable: true),
           StartTime = table.Column<string>(nullable: true),
           EndTime = table.Column<string>(nullable: true),
@@ -66,6 +61,11 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         {
           table.PrimaryKey("PK_WorkspacesTypes", w => w.Id);
         });
+
+      migrationBuilder.AddUniqueConstraint(
+        name: "UX_Workspaces_Name_Unique",
+        table: DbWorkspaceType.TableName,
+        column: nameof(DbWorkspaceType.Name));
     }
 
     private void CreateTagsTable(MigrationBuilder migrationBuilder)
