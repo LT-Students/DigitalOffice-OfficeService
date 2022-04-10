@@ -63,7 +63,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Migrations
         });
 
       migrationBuilder.AddUniqueConstraint(
-        name: "UX_Workspaces_Name_Unique",
+        name: "UC_WorkspacesTypes_Name",
         table: DbWorkspaceType.TableName,
         column: nameof(DbWorkspaceType.Name));
     }
