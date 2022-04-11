@@ -39,6 +39,12 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 
     [IgnoreParse]
     public ICollection<DbWorkspaceImage> Images { get; set; }
+
+    public DbWorkspace()
+    {
+      WorkspacesTags = new List<DbWorkspaceTag>();
+      Images = new List<DbWorkspaceImage>();
+    }
   }
 
   public class DbWorkspaceConfiguration : IEntityTypeConfiguration<DbWorkspace>

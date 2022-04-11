@@ -22,6 +22,11 @@ namespace LT.DigitalOffice.OfficeService.Models.Db
 
     [IgnoreParse]
     public ICollection<DbWorkspaceTag> WorkspacesTags { get; set; }
+
+    public DbTag()
+    {
+      WorkspacesTags = new List<DbWorkspaceTag>();
+    }
   }
 
   public class DbTagConfiguration : IEntityTypeConfiguration<DbTag>
