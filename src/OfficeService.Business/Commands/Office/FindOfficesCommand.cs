@@ -6,7 +6,7 @@ using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Validators.Interfaces;
-using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interface;
+using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
 using LT.DigitalOffice.OfficeService.Mappers.Models.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;

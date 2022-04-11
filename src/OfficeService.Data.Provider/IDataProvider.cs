@@ -2,6 +2,7 @@
 using LT.DigitalOffice.Kernel.Database;
 using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.OfficeService.Models.Db;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Data.Provider
@@ -11,5 +12,9 @@ namespace LT.DigitalOffice.OfficeService.Data.Provider
   {
     DbSet<DbOffice> Offices { get; set; }
     DbSet<DbOfficeUser> OfficesUsers { get; set; }
+    DbSet<DbWorkspace> Workspaces { get; set; }
+    DbSet<DbWorkspaceType> WorkspacesTypes { get; set; }
+    DbSet<DbWorkspaceImage> WorkspacesImages { get; set; }
+    DbSet<DbWorkspaceTag> WorkspacesTags { get; set; }
   }
 }

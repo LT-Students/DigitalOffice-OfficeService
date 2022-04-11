@@ -5,7 +5,7 @@ using LT.DigitalOffice.Kernel.Attributes;
 using LT.DigitalOffice.Kernel.Responses;
 using Microsoft.AspNetCore.JsonPatch;
 
-namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Interface
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces
 {
   [AutoInject]
   public interface IEditOfficeCommand
