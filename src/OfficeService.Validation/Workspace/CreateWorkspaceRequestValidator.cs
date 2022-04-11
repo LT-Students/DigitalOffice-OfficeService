@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-
 using LT.DigitalOffice.OfficeService.Data.Workspace.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Workspace;
 using LT.DigitalOffice.OfficeService.Validation.Workspace.Interfaces;

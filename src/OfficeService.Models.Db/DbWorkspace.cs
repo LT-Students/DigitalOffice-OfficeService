@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using LT.DigitalOffice.Kernel.BrokerSupport.Attributes.ParseEntity;
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

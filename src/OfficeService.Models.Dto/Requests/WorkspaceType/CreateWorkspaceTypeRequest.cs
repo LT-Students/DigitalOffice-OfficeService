@@ -1,5 +1,4 @@
 ﻿using System;
-
 using LT.DigitalOffice.OfficeService.Models.Dto.Enums.Workspace;
 
 namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType

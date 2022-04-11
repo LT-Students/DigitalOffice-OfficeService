@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using LT.DigitalOffice.OfficeService.Data.Provider;
 using LT.DigitalOffice.OfficeService.Data.Workspace.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Workspace.Filters;
-
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

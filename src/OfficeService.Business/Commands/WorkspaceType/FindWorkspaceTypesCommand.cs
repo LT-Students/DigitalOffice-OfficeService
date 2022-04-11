@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
@@ -13,7 +12,6 @@ using LT.DigitalOffice.OfficeService.Mappers.Models.WorkspaceType.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Models.Workspace;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType.Filters;
-
 using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType

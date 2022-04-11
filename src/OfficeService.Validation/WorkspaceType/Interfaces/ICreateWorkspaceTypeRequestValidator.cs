@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-
 using LT.DigitalOffice.Kernel.Attributes;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType;
 

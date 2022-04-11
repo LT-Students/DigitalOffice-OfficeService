@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.OfficeService.Mappers.Db.Workspace.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Workspace;
-
 using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.OfficeService.Mappers.Db.Workspace
