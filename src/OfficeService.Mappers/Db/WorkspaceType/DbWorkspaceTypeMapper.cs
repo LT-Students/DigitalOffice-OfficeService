@@ -13,7 +13,6 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db.WorkspaceType
   public class DbWorkspaceTypeMapper : IDbWorkspaceTypeMapper
   {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    // TODO: Check the regex
     private readonly Regex _nameRegex = new(@"^\s+|\s+$|\s+(?=\s)");
 
     public DbWorkspaceTypeMapper(IHttpContextAccessor httpContextAccessor)
