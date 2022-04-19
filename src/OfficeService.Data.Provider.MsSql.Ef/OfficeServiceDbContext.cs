@@ -10,15 +10,19 @@ namespace LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef
   /// </summary>
   public class OfficeServiceDbContext : DbContext, IDataProvider
   {
+    public DbSet<DbOffice> Offices { get; set; }
+    public DbSet<DbOfficeUser> OfficesUsers { get; set; }
+    public DbSet<DbWorkspace> Workspaces { get; set; }
+    public DbSet<DbWorkspaceType> WorkspacesTypes { get; set; }
+    public DbSet<DbWorkspaceImage> WorkspacesImages { get; set; }
+    public DbSet<DbWorkspaceTag> WorkspacesTags { get; set; }
+
     public OfficeServiceDbContext(DbContextOptions<OfficeServiceDbContext> options)
       : base(options)
     {
     }
 
-    public DbSet<DbOffice> Offices { get; set; }
-    public DbSet<DbOfficeUser> OfficesUsers { get; set; }
-
-    // Fluent API is written here.
+    // Fluent API is written here.\
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("LT.DigitalOffice.OfficeService.Models.Db"));
