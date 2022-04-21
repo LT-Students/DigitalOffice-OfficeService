@@ -5,7 +5,10 @@ namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters
 {
   public record OfficeFindFilter : BaseFindFilter
   {
-    [FromQuery(Name = "includeDeactivated")]
-    public bool IncludeDeactivated { get; set; } = false;
+    [FromQuery(Name = "ascendingsort")]
+    public bool? IsAscendingSort { get; set; }
+
+    [FromQuery(Name = "active")]
+    public bool? IsActive { get; set; }
   }
 }

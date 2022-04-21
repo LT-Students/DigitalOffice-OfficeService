@@ -57,9 +57,14 @@ namespace LT.DigitalOffice.OfficeService.Data
       IQueryable<DbOffice> dbOffices = _provider.Offices
         .AsQueryable();
 
-      if (!filter.IncludeDeactivated)
+      if (filter.IsAscendingSort.HasValue)
       {
-        dbOffices = dbOffices.Where(x => x.IsActive);
+        dbOffices = filter.IsAscendingSort.Value ? dbOffices.OrderBy(o => o.Name) : dbOffices.OrderByDescending(o => o.Name);
+      }
+
+      if (filter.IsActive.HasValue)
+      {
+        dbOffices = filter.IsActive.Value ? dbOffices.Where(x => x.IsActive) : dbOffices.Where(x => !x.IsActive);
       }
 
       return (await dbOffices.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbOffices.CountAsync());
