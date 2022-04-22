@@ -1,14 +1,13 @@
-﻿using System.Threading.Tasks;
-using LT.DigitalOffice.OfficeService.Data.Interfaces;
-using LT.DigitalOffice.Models.Broker.Common;
-using MassTransit;
+﻿using System;
+using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
-using LT.DigitalOffice.OfficeService.Models.Db;
-using System;
+using LT.DigitalOffice.Models.Broker.Publishing;
+using LT.DigitalOffice.OfficeService.Data.Interfaces;
+using MassTransit;
 
 namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {
-  public class DisactivateOfficeUserConsumer : IConsumer<IDisactivateUserRequest>
+  public class DisactivateOfficeUserConsumer : IConsumer<IDisactivateUserPublish>
   {
     private readonly IOfficeUserRepository _officeRepository;
     private readonly IGlobalCacheRepository _globalCache;
@@ -21,7 +20,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
       _globalCache = globalCache;
     }
 
-    public async Task Consume(ConsumeContext<IDisactivateUserRequest> context)
+    public async Task Consume(ConsumeContext<IDisactivateUserPublish> context)
     {
       Guid? officeId = await _officeRepository.RemoveAsync(context.Message.UserId, context.Message.ModifiedBy);
 
