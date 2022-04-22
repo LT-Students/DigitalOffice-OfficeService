@@ -1,21 +1,21 @@
 ﻿using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
-using LT.DigitalOffice.Models.Broker.Requests.Office;
+using LT.DigitalOffice.Models.Broker.Publishing.Subscriber.Office;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
 using LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces;
 using MassTransit;
 
 namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {
-  public class CreateUserOfficeConsumer : IConsumer<ICreateUserOfficeRequest>
+  public class CreateUserOfficeConsumer : IConsumer<ICreateUserOfficePublish>
   {
     private readonly IOfficeRepository _officeRepository;
     private readonly IOfficeUserRepository _officeUserRepository;
     private readonly IDbOfficeUserMapper _officeUserMapper;
     private readonly IGlobalCacheRepository _globalCache;
 
-    private async Task<bool> CreateUserOffice(ICreateUserOfficeRequest request)
+    private async Task<bool> CreateUserOffice(ICreateUserOfficePublish request)
     {
       if (!await _officeRepository.DoesExistAsync(request.OfficeId))
       {
@@ -37,7 +37,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
       _globalCache = globalCache;
     }
 
-    public async Task Consume(ConsumeContext<ICreateUserOfficeRequest> context)
+    public async Task Consume(ConsumeContext<ICreateUserOfficePublish> context)
     {
       bool result = await CreateUserOffice(context.Message);
 
