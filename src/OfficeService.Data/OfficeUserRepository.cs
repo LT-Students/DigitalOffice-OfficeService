@@ -24,24 +24,24 @@ namespace LT.DigitalOffice.OfficeService.Data
       _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<bool> CreateAsync(DbOfficeUser user)
+    public async Task<Guid?> CreateAsync(DbOfficeUser dbOfficeUser)
     {
-      if (user == null)
+      if (dbOfficeUser is null)
       {
-        return false;
+        return default;
       }
 
-      _provider.OfficesUsers.Add(user);
+      _provider.OfficesUsers.Add(dbOfficeUser);
       await _provider.SaveAsync();
 
-      return true;
+      return dbOfficeUser.Id;
     }
 
     public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds)
     {
       IQueryable<DbOfficeUser> users = _provider.OfficesUsers.Include(ou => ou.Office).AsQueryable();
 
-      if (usersIds != null)
+      if (usersIds is not null)
       {
         users = users.Where(x => usersIds.Contains(x.UserId) && x.IsActive);
       }
@@ -53,7 +53,7 @@ namespace LT.DigitalOffice.OfficeService.Data
     {
       DbOfficeUser user = await _provider.OfficesUsers.FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
 
-      if (user != null)
+      if (user is not null)
       {
         user.IsActive = false;
         user.ModifiedAtUtc = DateTime.UtcNow;

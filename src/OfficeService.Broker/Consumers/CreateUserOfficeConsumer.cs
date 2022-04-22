@@ -1,5 +1,4 @@
 ﻿using System.Threading.Tasks;
-using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Models.Broker.Publishing.Subscriber.Office;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
@@ -15,14 +14,12 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
     private readonly IDbOfficeUserMapper _officeUserMapper;
     private readonly IGlobalCacheRepository _globalCache;
 
-    private async Task<bool> CreateUserOffice(ICreateUserOfficePublish request)
+    private async Task CreateUserOffice(ICreateUserOfficePublish request)
     {
-      if (!await _officeRepository.DoesExistAsync(request.OfficeId))
+      if (await _officeRepository.DoesExistAsync(request.OfficeId))
       {
-        return false;
+        await _officeUserRepository.CreateAsync(_officeUserMapper.Map(request));
       }
-
-      return await _officeUserRepository.CreateAsync(_officeUserMapper.Map(request));
     }
 
     public CreateUserOfficeConsumer(
@@ -39,16 +36,8 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 
     public async Task Consume(ConsumeContext<ICreateUserOfficePublish> context)
     {
-      bool result = await CreateUserOffice(context.Message);
-
-      object response = OperationResultWrapper.CreateResponse((_) => result, context.Message);
-
-      await context.RespondAsync<IOperationResult<bool>>(response);
-
-      if (result)
-      {
-        await _globalCache.RemoveAsync(context.Message.OfficeId);
-      }
+      await CreateUserOffice(context.Message);
+      await _globalCache.RemoveAsync(context.Message.OfficeId);
     }
   }
 }
