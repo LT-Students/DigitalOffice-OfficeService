@@ -14,14 +14,6 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
     private readonly IDbOfficeUserMapper _officeUserMapper;
     private readonly IGlobalCacheRepository _globalCache;
 
-    private async Task CreateUserOffice(ICreateUserOfficePublish request)
-    {
-      if (await _officeRepository.DoesExistAsync(request.OfficeId))
-      {
-        await _officeUserRepository.CreateAsync(_officeUserMapper.Map(request));
-      }
-    }
-
     public CreateUserOfficeConsumer(
       IOfficeRepository officeRepository,
       IOfficeUserRepository officeUserRepository,
@@ -36,8 +28,11 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 
     public async Task Consume(ConsumeContext<ICreateUserOfficePublish> context)
     {
-      await CreateUserOffice(context.Message);
-      await _globalCache.RemoveAsync(context.Message.OfficeId);
+      if (await _officeRepository.DoesExistAsync(context.Message.OfficeId))
+      {
+        await _officeUserRepository.CreateAsync(_officeUserMapper.Map(context.Message));
+        await _globalCache.RemoveAsync(context.Message.OfficeId);
+      }
     }
   }
 }
