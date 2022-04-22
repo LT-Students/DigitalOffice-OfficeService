@@ -24,17 +24,17 @@ namespace LT.DigitalOffice.OfficeService.Data
       _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<Guid?> CreateAsync(DbOfficeUser dbOfficeUser)
+    public async Task<bool> CreateAsync(DbOfficeUser dbOfficeUser)
     {
       if (dbOfficeUser is null)
       {
-        return default;
+        return false;
       }
 
       _provider.OfficesUsers.Add(dbOfficeUser);
       await _provider.SaveAsync();
 
-      return dbOfficeUser.Id;
+      return true;
     }
 
     public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds)
