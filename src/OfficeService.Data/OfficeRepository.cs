@@ -59,12 +59,14 @@ namespace LT.DigitalOffice.OfficeService.Data
 
       if (filter.IsAscendingSort.HasValue)
       {
-        dbOffices = filter.IsAscendingSort.Value ? dbOffices.OrderBy(o => o.Name) : dbOffices.OrderByDescending(o => o.Name);
+        dbOffices = filter.IsAscendingSort.Value 
+        ? dbOffices.OrderBy(o => o.Name)
+        : dbOffices.OrderByDescending(o => o.Name);
       }
 
       if (filter.IsActive.HasValue)
       {
-        dbOffices = filter.IsActive.Value ? dbOffices.Where(x => x.IsActive) : dbOffices.Where(x => !x.IsActive);
+        dbOffices = dbOffices.Where(x => x.IsActive == filter.IsActive);
       }
 
       return (await dbOffices.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbOffices.CountAsync());

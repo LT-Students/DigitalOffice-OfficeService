@@ -5,10 +5,10 @@ namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters
 {
   public record OfficeFindFilter : BaseFindFilter
   {
-    [FromQuery(Name = "ascendingsort")]
+    [FromQuery(Name = "isAscendingSort")]
     public bool? IsAscendingSort { get; set; }
 
-    [FromQuery(Name = "active")]
+    [FromQuery(Name = "isActive")]
     public bool? IsActive { get; set; }
   }
 }
