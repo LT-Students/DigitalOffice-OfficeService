@@ -62,12 +62,20 @@ namespace LT.DigitalOffice.OfficeService.Data
         dbOffices = dbOffices.Where(x => x.IsActive == filter.IsActive);
       }
 
+      if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
+      {
+        dbOffices = dbOffices.Where(x =>
+          x.Name.ToLower().Contains(filter.NameIncludeSubstring.ToLower()));
+      }
+
       if (filter.IsAscendingSort.HasValue)
       {
         dbOffices = filter.IsAscendingSort.Value 
         ? dbOffices.OrderBy(o => o.Name)
         : dbOffices.OrderByDescending(o => o.Name);
       }
+
+
 
       return (await dbOffices.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbOffices.CountAsync());
     }
