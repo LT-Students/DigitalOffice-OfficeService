@@ -75,8 +75,6 @@ namespace LT.DigitalOffice.OfficeService.Data
         : dbOffices.OrderByDescending(o => o.Name);
       }
 
-
-
       return (await dbOffices.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbOffices.CountAsync());
     }
 
