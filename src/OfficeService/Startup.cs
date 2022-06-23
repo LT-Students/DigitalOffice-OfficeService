@@ -6,6 +6,8 @@ using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
 using LT.DigitalOffice.Kernel.BrokerSupport.Middlewares.Token;
 using LT.DigitalOffice.Kernel.Configurations;
+using LT.DigitalOffice.Kernel.EFSupport.Extensions;
+using LT.DigitalOffice.Kernel.EFSupport.Helpers;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
@@ -99,18 +101,7 @@ namespace LT.DigitalOffice.OfficeService
         })
         .AddNewtonsoftJson();
 
-
-      string connStr = Environment.GetEnvironmentVariable("ConnectionString");
-      if (string.IsNullOrEmpty(connStr))
-      {
-        connStr = Configuration.GetConnectionString("SQLConnectionString");
-
-        Log.Information($"SQL connection string from appsettings.json was used. Value '{PasswordHider.Hide(connStr)}'.");
-      }
-      else
-      {
-        Log.Information($"SQL connection string from environment was used. Value '{PasswordHider.Hide(connStr)}'.");
-      }
+      string connStr = ConnectionStringHandler.Get(Configuration);
 
       services.AddDbContext<OfficeServiceDbContext>(options =>
       {
@@ -134,7 +125,7 @@ namespace LT.DigitalOffice.OfficeService
       }
 
       services.AddSingleton<IConnectionMultiplexer>(
-        x => ConnectionMultiplexer.Connect(redisConnStr + ",abortConnect=false,connectRetry=1,connectTimeout=2000"));
+        _ => ConnectionMultiplexer.Connect(redisConnStr + ",abortConnect=false,connectRetry=1,connectTimeout=2000"));
 
       services.AddBusinessObjects();
 
@@ -143,7 +134,7 @@ namespace LT.DigitalOffice.OfficeService
 
     public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
     {
-      UpdateDatabase(app);
+      app.UpdateDatabase<OfficeServiceDbContext>();
 
       string error = FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Offices);
       if (error is not null)
@@ -261,17 +252,6 @@ namespace LT.DigitalOffice.OfficeService
       {
         ep.ConfigureConsumer<FilterOfficesUsersConsumer>(context);
       });
-    }
-
-    private void UpdateDatabase(IApplicationBuilder app)
-    {
-      using var serviceScope = app.ApplicationServices
-        .GetRequiredService<IServiceScopeFactory>()
-        .CreateScope();
-
-      using var context = serviceScope.ServiceProvider.GetService<OfficeServiceDbContext>();
-
-      context.Database.Migrate();
     }
 
     #endregion
