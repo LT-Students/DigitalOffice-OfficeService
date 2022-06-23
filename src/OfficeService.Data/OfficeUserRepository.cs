@@ -37,6 +37,19 @@ namespace LT.DigitalOffice.OfficeService.Data
       return true;
     }
 
+    public async Task<bool> CreateAsync(List<DbOfficeUser> dbOfficesUsers)
+    {
+      if (dbOfficesUsers is null)
+      {
+        return false;
+      }
+
+      await _provider.OfficesUsers.AddRangeAsync(dbOfficesUsers);
+      await _provider.SaveAsync();
+
+      return true;
+    }
+
     public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds)
     {
       IQueryable<DbOfficeUser> users = _provider.OfficesUsers.Include(ou => ou.Office).AsQueryable();
@@ -45,6 +58,16 @@ namespace LT.DigitalOffice.OfficeService.Data
       {
         users = users.Where(x => usersIds.Contains(x.UserId) && x.IsActive);
       }
+
+      return await users.ToListAsync();
+    }
+
+    public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds, Guid officeId)
+    {
+      IQueryable<DbOfficeUser> users = _provider.OfficesUsers
+        .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId)) 
+        .Include(ou => ou.Office)
+        .AsQueryable();
 
       return await users.ToListAsync();
     }
@@ -79,6 +102,18 @@ namespace LT.DigitalOffice.OfficeService.Data
         user.ModifiedBy = senderId;
       }
 
+      await _provider.SaveAsync();
+
+      return true;
+    }
+
+    public async Task<bool> RemoveAsync(List<Guid> usersIds, Guid officeId)
+    {
+      List<DbOfficeUser> officeUsers = await _provider.OfficesUsers
+        .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId))
+        .ToListAsync();
+
+      _provider.OfficesUsers.RemoveRange(officeUsers);
       await _provider.SaveAsync();
 
       return true;
