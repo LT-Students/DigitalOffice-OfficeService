@@ -10,10 +10,18 @@ namespace LT.DigitalOffice.OfficeService.Controllers
   [ApiController]
   public class UsersController : ControllerBase
   {
-    [HttpPost("change")]
-    public async Task<OperationResultResponse<bool>> ChangeOfficeAsync(
-      [FromServices] IChangeOfficeCommand command,
-      [FromBody] ChangeUserOfficeRequest request)
+    [HttpPost("create")]
+    public async Task<OperationResultResponse<bool>> AddUsersAsync(
+      [FromServices] ICreateOfficesUsersCommand command,
+      [FromBody] CreateOfficesUsersRequest request)
+    {
+      return await command.ExecuteAsync(request);
+    }
+
+    [HttpPut("remove")]
+    public async Task<OperationResultResponse<bool>> RemoveUsers(
+      [FromServices] IRemoveOfficesUsersCommand command,
+      [FromBody] RemoveOfficesUsersRequest request)
     {
       return await command.ExecuteAsync(request);
     }
