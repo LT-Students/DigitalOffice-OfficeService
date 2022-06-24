@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentValidation;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
+using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Users;
 using LT.DigitalOffice.OfficeService.Validation.Users.Interfaces;
 using Microsoft.Extensions.Logging;
@@ -12,7 +13,6 @@ namespace LT.DigitalOffice.OfficeService.Validation.Users
   public class RemoveUsersOfficesRequestValidator : AbstractValidator<RemoveOfficesUsersRequest>, IRemoveOfficesUsersRequestValidator
   {
     private readonly ILogger<IRemoveOfficesUsersRequestValidator> _logger;
-
     private readonly IOfficeUserRepository _officeUserRepository;
 
     private async Task<bool> CheckOfficesUsersExistence(List<Guid> usersIds, Guid officeId)
@@ -21,7 +21,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Users
 
       try
       {
-        var officesUsers = await _officeUserRepository.GetAsync(usersIds, officeId);
+        List<DbOfficeUser> officesUsers = await _officeUserRepository.GetAsync(usersIds, officeId);
 
         if (officesUsers.Count == usersIds.Count)
         {
