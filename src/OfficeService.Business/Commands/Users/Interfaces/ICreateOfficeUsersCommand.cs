@@ -6,8 +6,8 @@ using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Users;
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Users.Interfaces
 {
   [AutoInject]
-  public interface ICreateOfficesUsersCommand
+  public interface ICreateOfficeUsersCommand
   {
-    Task<OperationResultResponse<bool>> ExecuteAsync(CreateOfficesUsersRequest request);
+    Task<OperationResultResponse<bool>> ExecuteAsync(CreateOfficeUsers request);
   }
 }

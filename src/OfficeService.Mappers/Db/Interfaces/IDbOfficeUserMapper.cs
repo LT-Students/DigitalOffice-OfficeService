@@ -11,6 +11,6 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces
   {
     DbOfficeUser Map(ICreateUserOfficePublish request);
 
-    List<DbOfficeUser> Map(CreateOfficesUsersRequest request);
+    List<DbOfficeUser> Map(CreateOfficeUsers request);
   }
 }

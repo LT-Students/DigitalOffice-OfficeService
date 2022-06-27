@@ -36,7 +36,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db
       };
     }
 
-    public List<DbOfficeUser> Map(CreateOfficesUsersRequest request)
+    public List<DbOfficeUser> Map(CreateOfficeUsers request)
     {
       return request?.UsersIds.ConvertAll(u => new DbOfficeUser
       {

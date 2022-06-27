@@ -5,7 +5,7 @@ using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Users;
 namespace LT.DigitalOffice.OfficeService.Validation.Users.Interfaces
 {
   [AutoInject]
-  public interface IRemoveOfficesUsersRequestValidator : IValidator<RemoveOfficesUsersRequest>
+  public interface IRemoveOfficeUsersValidator : IValidator<RemoveOfficeUsers>
   {
   }
 }

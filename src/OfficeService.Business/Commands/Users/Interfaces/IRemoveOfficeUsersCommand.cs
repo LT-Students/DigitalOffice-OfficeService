@@ -6,8 +6,8 @@ using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Users;
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Users.Interfaces
 {
   [AutoInject]
-  public interface IRemoveOfficesUsersCommand
+  public interface IRemoveOfficeUsersCommand
   {
-    Task<OperationResultResponse<bool>> ExecuteAsync(RemoveOfficesUsersRequest request);
+    Task<OperationResultResponse<bool>> ExecuteAsync(RemoveOfficeUsers request);
   }
 }

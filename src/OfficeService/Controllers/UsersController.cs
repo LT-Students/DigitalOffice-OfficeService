@@ -11,17 +11,17 @@ namespace LT.DigitalOffice.OfficeService.Controllers
   public class UsersController : ControllerBase
   {
     [HttpPost("create")]
-    public async Task<OperationResultResponse<bool>> AddUsersAsync(
-      [FromServices] ICreateOfficesUsersCommand command,
-      [FromBody] CreateOfficesUsersRequest request)
+    public async Task<OperationResultResponse<bool>> CreateAsync(
+      [FromServices] ICreateOfficeUsersCommand command,
+      [FromBody] CreateOfficeUsers request)
     {
       return await command.ExecuteAsync(request);
     }
 
-    [HttpPut("remove")]
-    public async Task<OperationResultResponse<bool>> RemoveUsers(
-      [FromServices] IRemoveOfficesUsersCommand command,
-      [FromBody] RemoveOfficesUsersRequest request)
+    [HttpDelete("remove")]
+    public async Task<OperationResultResponse<bool>> RemoveAsync(
+      [FromServices] IRemoveOfficeUsersCommand command,
+      [FromBody] RemoveOfficeUsers request)
     {
       return await command.ExecuteAsync(request);
     }

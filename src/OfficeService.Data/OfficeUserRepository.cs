@@ -52,24 +52,22 @@ namespace LT.DigitalOffice.OfficeService.Data
 
     public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds)
     {
-      IQueryable<DbOfficeUser> users = _provider.OfficesUsers.Include(ou => ou.Office).AsQueryable();
-
-      if (usersIds is not null)
-      {
-        users = users.Where(x => usersIds.Contains(x.UserId) && x.IsActive);
-      }
+      IQueryable<DbOfficeUser> users = _provider.OfficesUsers
+        .Where(u => usersIds.Contains(u.UserId) && u.IsActive)
+        .Include(ou => ou.Office)
+        .AsQueryable();
 
       return await users.ToListAsync();
     }
 
     public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds, Guid officeId)
     {
-      IQueryable<DbOfficeUser> users = _provider.OfficesUsers
+      IQueryable<DbOfficeUser> usersQuery = _provider.OfficesUsers
         .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId)) 
         .Include(ou => ou.Office)
         .AsQueryable();
 
-      return await users.ToListAsync();
+      return await usersQuery.ToListAsync();
     }
 
     public async Task<Guid?> RemoveAsync(Guid userId, Guid removedBy)
@@ -109,6 +107,11 @@ namespace LT.DigitalOffice.OfficeService.Data
 
     public async Task<bool> RemoveAsync(List<Guid> usersIds, Guid officeId)
     {
+      if (usersIds is null || usersIds.Count == 0)
+      {
+        return false;
+      }
+
       List<DbOfficeUser> officeUsers = await _provider.OfficesUsers
         .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId))
         .ToListAsync();
