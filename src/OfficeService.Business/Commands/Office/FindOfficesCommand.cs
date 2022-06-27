@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
+using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Validators.Interfaces;
 using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
@@ -22,18 +23,20 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
     private readonly IOfficeInfoMapper _mapper;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBaseFindFilterValidator _baseFindValidator;
-
+    private readonly IResponseCreator _responseCreator;
 
     public FindOfficesCommand(
       IOfficeRepository officeRepository,
       IOfficeInfoMapper mapper,
       IHttpContextAccessor httpContextAccessor,
-      IBaseFindFilterValidator baseFindValidator)
+      IBaseFindFilterValidator baseFindValidator,
+      IResponseCreator responseCreator)
     {
       _officeRepository = officeRepository;
       _mapper = mapper;
       _httpContextAccessor = httpContextAccessor;
       _baseFindValidator = baseFindValidator;
+      _responseCreator = responseCreator;
     }
 
     public async Task<FindResultResponse<OfficeInfo>> ExecuteAsync(OfficeFindFilter filter)
@@ -44,9 +47,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
       {
         _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
 
-        response.Status = OperationResultStatusType.Failed;
-        response.Errors = errors;
-        return response;
+        return _responseCreator.CreateFailureFindResponse<OfficeInfo>(HttpStatusCode.BadRequest, errors);
       }
 
       (List<DbOffice> offices, int totalCount) = await _officeRepository.FindAsync(filter);
@@ -56,7 +57,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
         .ToList();
 
       response.TotalCount = totalCount;
-      response.Status = OperationResultStatusType.FullSuccess;
 
       return response;
     }

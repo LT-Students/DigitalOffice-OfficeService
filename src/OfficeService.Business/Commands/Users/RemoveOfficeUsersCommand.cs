@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
@@ -53,13 +52,11 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
-      bool result = await _repository.RemoveAsync(request.UsersIds, request.OfficeId);
+      OperationResultResponse<bool> response = new();
 
-      return new()
-      {
-        Status = result ? OperationResultStatusType.FullSuccess : OperationResultStatusType.Failed,
-        Body = result
-      };
+      response.Body = await _repository.RemoveAsync(request.UsersIds, request.OfficeId);
+
+      return response;
     }
   }
 }
