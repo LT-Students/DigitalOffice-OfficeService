@@ -19,7 +19,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Users
 
       RuleFor(r => r.UsersIds)
         .MustAsync(async (usersIds, _) => 
-          (await userService.CheckUsersExistence(usersIds, new List<string>())).Count == 1)
+          (await userService.CheckUsersExistence(usersIds, new List<string>())).Count == usersIds.Count)
         .WithMessage("Users must exist");
     }
   }

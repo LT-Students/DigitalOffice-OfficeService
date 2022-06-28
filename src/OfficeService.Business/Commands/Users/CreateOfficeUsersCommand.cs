@@ -50,7 +50,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
     public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateOfficeUsers request)
     {
       if (request.UsersIds.All(u => u != _httpContextAccessor.HttpContext.GetUserId())
-          && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
+        && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
       {
         return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
       }
@@ -62,11 +62,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
-      List<Guid> existingUsersIds = (await _repository.GetAsync(request.UsersIds))
-        ?.Select(eu => eu.UserId)
-        .ToList();
-
-      List<Guid> removedUsersIds = await _repository.RemoveAsync(existingUsersIds);
+      List<Guid> removedUsersIds = await _repository.RemoveAsync(request.UsersIds, null);
       if (removedUsersIds is not null)
       {
         foreach (Guid removedUserId in removedUsersIds)

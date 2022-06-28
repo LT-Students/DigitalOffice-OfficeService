@@ -105,33 +105,20 @@ namespace LT.DigitalOffice.OfficeService.Data
       return true;
     }
 
-    public async Task<bool> RemoveAsync(List<Guid> usersIds, Guid officeId)
+    public async Task<List<Guid>> RemoveAsync(List<Guid> usersIds, Guid? officeId)
     {
-      if (usersIds is null || usersIds.Count == 0)
-      {
-        return false;
-      }
-
-      List<DbOfficeUser> officeUsers = await _provider.OfficesUsers
-        .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId))
-        .ToListAsync();
-
-      _provider.OfficesUsers.RemoveRange(officeUsers);
-      await _provider.SaveAsync();
-
-      return true;
-    }
-
-    public async Task<List<Guid>> RemoveAsync(List<Guid> usersIds)
-    {
-      if (usersIds is null || usersIds.Count == 0)
+      if (!usersIds.Any())
       {
         return null;
       }
 
-      List<DbOfficeUser> officeUsers = await _provider.OfficesUsers
-        .Where(ou => usersIds.Contains(ou.UserId))
-        .ToListAsync();
+      List<DbOfficeUser> officeUsers = officeId.HasValue
+        ? await _provider.OfficesUsers
+          .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId))
+          .ToListAsync()
+        : await _provider.OfficesUsers
+          .Where(ou => usersIds.Contains(ou.UserId))
+          .ToListAsync();
 
       _provider.OfficesUsers.RemoveRange(officeUsers);
       await _provider.SaveAsync();

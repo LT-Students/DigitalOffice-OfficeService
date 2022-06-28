@@ -41,8 +41,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 
     public async Task<FindResultResponse<OfficeInfo>> ExecuteAsync(OfficeFindFilter filter)
     {
-      FindResultResponse<OfficeInfo> response = new();
-
       if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors))
       {
         _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
@@ -51,6 +49,8 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
       }
 
       (List<DbOffice> offices, int totalCount) = await _officeRepository.FindAsync(filter);
+
+      FindResultResponse<OfficeInfo> response = new();
 
       response.Body = offices
         .Select(_mapper.Map)
