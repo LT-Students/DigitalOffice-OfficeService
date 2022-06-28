@@ -57,6 +57,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
       {
         await _globalCache.RemoveAsync(removedUserId);
       }
+
       OperationResultResponse<bool> response = new() { Body = true };
 
       return response;
