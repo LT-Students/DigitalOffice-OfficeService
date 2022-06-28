@@ -10,11 +10,9 @@ using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
-using LT.DigitalOffice.OfficeService.Broker.Requests.Interfaces;
 using LT.DigitalOffice.OfficeService.Business.Commands.Users.Interfaces;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
 using LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces;
-using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Users;
 using LT.DigitalOffice.OfficeService.Validation.Users.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -64,18 +62,16 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
-      List<DbOfficeUser> existingUsers = await _repository.GetAsync(request.UsersIds);
-      if (existingUsers.Count > 0)
+      List<Guid> existingUsersIds = (await _repository.GetAsync(request.UsersIds))
+        ?.Select(eu => eu.UserId)
+        .ToList();
+
+      List<Guid> removedUsersIds = await _repository.RemoveAsync(existingUsersIds);
+      if (removedUsersIds is not null)
       {
-        foreach (DbOfficeUser user in existingUsers)
+        foreach (Guid removedUserId in removedUsersIds)
         {
-          Guid? removedUserId = await _repository.RemoveAsync(
-            user.UserId, 
-            _httpContextAccessor.HttpContext.GetUserId());
-          if (removedUserId.HasValue)
-          {
-            await _globalCache.RemoveAsync(removedUserId.Value);
-          }
+          await _globalCache.RemoveAsync(removedUserId);
         }
       }
 

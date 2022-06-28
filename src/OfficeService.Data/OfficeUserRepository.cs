@@ -121,5 +121,22 @@ namespace LT.DigitalOffice.OfficeService.Data
 
       return true;
     }
+
+    public async Task<List<Guid>> RemoveAsync(List<Guid> usersIds)
+    {
+      if (usersIds is null || usersIds.Count == 0)
+      {
+        return null;
+      }
+
+      List<DbOfficeUser> officeUsers = await _provider.OfficesUsers
+        .Where(ou => usersIds.Contains(ou.UserId))
+        .ToListAsync();
+
+      _provider.OfficesUsers.RemoveRange(officeUsers);
+      await _provider.SaveAsync();
+
+      return officeUsers.Select(ou => ou.UserId).ToList();
+    }
   }
 }
