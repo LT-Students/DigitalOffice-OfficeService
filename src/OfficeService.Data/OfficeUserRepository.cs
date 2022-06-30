@@ -107,7 +107,7 @@ namespace LT.DigitalOffice.OfficeService.Data
 
     public async Task<List<Guid>> RemoveAsync(List<Guid> usersIds, Guid? officeId)
     {
-      if (!usersIds.Any())
+      if (usersIds is null || !usersIds.Any())
       {
         return null;
       }
