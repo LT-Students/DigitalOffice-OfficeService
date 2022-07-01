@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
@@ -73,7 +70,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
       OperationResultResponse<bool> response = new();
 
       response.Body = await _officeRepository.EditAsync(officeId, _mapper.Map(request));
-      response.Status = OperationResultStatusType.FullSuccess;
 
       if (!response.Body)
       {

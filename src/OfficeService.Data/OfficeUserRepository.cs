@@ -37,16 +37,37 @@ namespace LT.DigitalOffice.OfficeService.Data
       return true;
     }
 
-    public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds)
+    public async Task<bool> CreateAsync(List<DbOfficeUser> dbOfficesUsers)
     {
-      IQueryable<DbOfficeUser> users = _provider.OfficesUsers.Include(ou => ou.Office).AsQueryable();
-
-      if (usersIds is not null)
+      if (dbOfficesUsers is null)
       {
-        users = users.Where(x => usersIds.Contains(x.UserId) && x.IsActive);
+        return false;
       }
 
+      await _provider.OfficesUsers.AddRangeAsync(dbOfficesUsers);
+      await _provider.SaveAsync();
+
+      return true;
+    }
+
+    public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds)
+    {
+      IQueryable<DbOfficeUser> users = _provider.OfficesUsers
+        .Where(u => usersIds.Contains(u.UserId) && u.IsActive)
+        .Include(ou => ou.Office)
+        .AsQueryable();
+
       return await users.ToListAsync();
+    }
+
+    public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds, Guid officeId)
+    {
+      IQueryable<DbOfficeUser> usersQuery = _provider.OfficesUsers
+        .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId)) 
+        .Include(ou => ou.Office)
+        .AsQueryable();
+
+      return await usersQuery.ToListAsync();
     }
 
     public async Task<Guid?> RemoveAsync(Guid userId, Guid removedBy)
@@ -82,6 +103,27 @@ namespace LT.DigitalOffice.OfficeService.Data
       await _provider.SaveAsync();
 
       return true;
+    }
+
+    public async Task<List<Guid>> RemoveAsync(List<Guid> usersIds, Guid? officeId)
+    {
+      if (usersIds is null || !usersIds.Any())
+      {
+        return null;
+      }
+
+      List<DbOfficeUser> officeUsers = officeId.HasValue
+        ? await _provider.OfficesUsers
+          .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId))
+          .ToListAsync()
+        : await _provider.OfficesUsers
+          .Where(ou => usersIds.Contains(ou.UserId))
+          .ToListAsync();
+
+      _provider.OfficesUsers.RemoveRange(officeUsers);
+      await _provider.SaveAsync();
+
+      return officeUsers.Select(ou => ou.UserId).ToList();
     }
   }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Models.Broker.Publishing.Subscriber.Office;
 using LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces;
@@ -35,22 +36,17 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db
       };
     }
 
-    public DbOfficeUser Map(ChangeUserOfficeRequest request)
+    public List<DbOfficeUser> Map(CreateOfficeUsers request)
     {
-      if (request == null || !request.OfficeId.HasValue)
-      {
-        return null;
-      }
-
-      return new DbOfficeUser
+      return request?.UsersIds.ConvertAll(u => new DbOfficeUser
       {
         Id = Guid.NewGuid(),
-        OfficeId = request.OfficeId.Value,
-        UserId = request.UserId,
+        OfficeId = request.OfficeId,
+        UserId = u,
         CreatedAtUtc = DateTime.UtcNow,
         CreatedBy = _httpContextAccessor.HttpContext.GetUserId(),
         IsActive = true
-      };
+      });
     }
   }
 }

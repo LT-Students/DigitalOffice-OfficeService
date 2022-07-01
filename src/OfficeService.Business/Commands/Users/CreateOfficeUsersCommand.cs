@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
@@ -19,69 +19,63 @@ using Microsoft.AspNetCore.Http;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Users
 {
-  public class ChangeOfficeCommand : IChangeOfficeCommand
+  public class CreateOfficeUsersCommand : ICreateOfficeUsersCommand
   {
-    private readonly IAccessValidator _accessValidator;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IAccessValidator _accessValidator;
     private readonly IResponseCreator _responseCreator;
-    private readonly IChangeOfficeRequestValidator _validator;
     private readonly IDbOfficeUserMapper _mapper;
+    private readonly ICreateOfficeUsersValidator _validator;
     private readonly IOfficeUserRepository _repository;
     private readonly IGlobalCacheRepository _globalCache;
 
-    public ChangeOfficeCommand(
-      IAccessValidator accessValidator,
+    public CreateOfficeUsersCommand(
       IHttpContextAccessor httpContextAccessor,
+      IAccessValidator accessValidator,
       IResponseCreator responseCreator,
-      IChangeOfficeRequestValidator validator,
       IDbOfficeUserMapper mapper,
+      ICreateOfficeUsersValidator validator,
       IOfficeUserRepository repository,
       IGlobalCacheRepository globalCache)
     {
-      _accessValidator = accessValidator;
       _httpContextAccessor = httpContextAccessor;
+      _accessValidator = accessValidator;
       _responseCreator = responseCreator;
-      _validator = validator;
       _mapper = mapper;
+      _validator = validator;
       _repository = repository;
       _globalCache = globalCache;
     }
 
-    public async Task<OperationResultResponse<bool>> ExecuteAsync(ChangeUserOfficeRequest request)
+    public async Task<OperationResultResponse<bool>> ExecuteAsync(CreateOfficeUsers request)
     {
-      if (_httpContextAccessor.HttpContext.GetUserId() != request.UserId
+      if (request.UsersIds.All(u => u != _httpContextAccessor.HttpContext.GetUserId())
         && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveUsers))
       {
         return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.Forbidden);
       }
 
       ValidationResult validationResult = await _validator.ValidateAsync(request);
-
       if (!validationResult.IsValid)
       {
         return _responseCreator.CreateFailureResponse<bool>(HttpStatusCode.BadRequest,
           validationResult.Errors.Select(e => e.ErrorMessage).ToList());
       }
 
-      Guid? removedOfficeId = await _repository.RemoveAsync(request.UserId, _httpContextAccessor.HttpContext.GetUserId());
-
-      if (removedOfficeId.HasValue)
+      List<Guid> removedUsersIds = await _repository.RemoveAsync(request.UsersIds, null);
+      if (removedUsersIds is not null)
       {
-        await _globalCache.RemoveAsync(removedOfficeId.Value);
+        foreach (Guid removedUserId in removedUsersIds)
+        {
+          await _globalCache.RemoveAsync(removedUserId);
+        }
       }
 
-      bool result = !request.OfficeId.HasValue || await _repository.CreateAsync(_mapper.Map(request));
+      OperationResultResponse<bool> response = new();
 
-      if (result && request.OfficeId.HasValue)
-      {
-        await _globalCache.RemoveAsync(request.OfficeId.Value);
-      }
+      response.Body = await _repository.CreateAsync(_mapper.Map(request));
 
-      return new()
-      {
-        Status = result ? OperationResultStatusType.FullSuccess : OperationResultStatusType.Failed,
-        Body = result
-      };
+      return response;
     }
   }
 }
