@@ -211,6 +211,7 @@ namespace LT.DigitalOffice.OfficeService
         x.AddConsumer<GetOfficesConsumer>();
         x.AddConsumer<DisactivateOfficeUserConsumer>();
         x.AddConsumer<FilterOfficesUsersConsumer>();
+        x.AddConsumer<CheckWorkspaceIsBookableConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
           {
@@ -251,6 +252,11 @@ namespace LT.DigitalOffice.OfficeService
       cfg.ReceiveEndpoint(_rabbitMqConfig.FilterOfficesEndpoint, ep =>
       {
         ep.ConfigureConsumer<FilterOfficesUsersConsumer>(context);
+      });
+
+      cfg.ReceiveEndpoint(_rabbitMqConfig.CheckWorkspaceIsBookableEndpoint, ep =>
+      {
+        ep.ConfigureConsumer<CheckWorkspaceIsBookableConsumer>(context);
       });
     }
 
