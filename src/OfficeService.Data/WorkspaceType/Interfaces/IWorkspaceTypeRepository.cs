@@ -13,5 +13,7 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType.Interfaces
     Task<Guid?> CreateAsync(DbWorkspaceType workspaceType);
 
     Task<(List<DbWorkspaceType>, int totalCount)> FindAsync(WorkspaceTypeFindFilter filter);
+
+    Task<bool> IsNameTaken(string name);
   }
 }

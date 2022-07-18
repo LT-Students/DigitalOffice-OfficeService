@@ -3,30 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LT.DigitalOffice.OfficeService.Data.Provider;
-using LT.DigitalOffice.OfficeService.Data.Workspace;
 using LT.DigitalOffice.OfficeService.Data.WorkspaceType.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType.Filters;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType
 {
   public class WorkspaceTypeRepository : IWorkspaceTypeRepository
   {
     private readonly IDataProvider _provider;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<WorkspaceRepository> _logger;
 
     public WorkspaceTypeRepository(
-      IDataProvider provider,
-      IHttpContextAccessor httpContextAccessor,
-      ILogger<WorkspaceRepository> logger)
+      IDataProvider provider)
     {
       _provider = provider;
-      _httpContextAccessor = httpContextAccessor;
-      _logger = logger;
     }
 
     public async Task<Guid?> CreateAsync(DbWorkspaceType workspaceType)
@@ -59,6 +50,11 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType
 
       return (
         await dbWorkspaceTypes.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbWorkspaceTypes.CountAsync());
+    }
+
+    public async Task<bool> IsNameTaken(string name)
+    {
+      return await _provider.WorkspacesTypes.AnyAsync(wt => string.Equals(wt.Name, name));
     }
   }
 }
