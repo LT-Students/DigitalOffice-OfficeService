@@ -36,7 +36,10 @@ namespace LT.DigitalOffice.OfficeService.Data.Workspace
     {
       return await _provider.Workspaces
         .Include(w => w.WorkspaceType)
-        .FirstOrDefaultAsync(x => x.Id == workspaceId);
+        .FirstOrDefaultAsync(x =>
+          x.Id == workspaceId
+          && x.IsActive
+          && x.WorkspaceType.IsActive);
     }
 
     public async Task<(List<DbWorkspace>, int totalCount)> FindAsync(WorkspaceFindFilter filter)
@@ -59,7 +62,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Workspace
           .Include(w => w.WorkspaceType)
           .Skip(filter.SkipCount)
           .Take(filter.TakeCount)
-          .ToListAsync(), 
+          .ToListAsync(),
         await dbWorkspaces.CountAsync());
     }
   }
