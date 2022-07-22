@@ -10,6 +10,7 @@ namespace LT.DigitalOffice.OfficeService.Models.Dto.Configuration
     public string CreateUserOfficeEndpoint { get; set; }
     public string DisactivateOfficeUserEndpoint { get; set; }
     public string FilterOfficesEndpoint { get; set; }
+    public string CheckWorkspaceIsBookableEndpoint { get; set; }
 
     [AutoInjectRequest(typeof(ICheckUsersExistence))]
     public string CheckUsersExistenceEndpoint { get; set; }
