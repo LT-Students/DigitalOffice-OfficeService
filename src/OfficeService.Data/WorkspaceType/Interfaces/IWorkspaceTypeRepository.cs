@@ -14,6 +14,6 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType.Interfaces
 
     Task<(List<DbWorkspaceType>, int totalCount)> FindAsync(WorkspaceTypeFindFilter filter);
 
-    Task<bool> IsNameTaken(string name);
+    Task<bool> DoesNameExistAsync(string name);
   }
 }

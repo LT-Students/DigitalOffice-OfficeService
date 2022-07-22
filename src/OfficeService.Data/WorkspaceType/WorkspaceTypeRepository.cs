@@ -52,7 +52,7 @@ namespace LT.DigitalOffice.OfficeService.Data.WorkspaceType
         await dbWorkspaceTypes.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbWorkspaceTypes.CountAsync());
     }
 
-    public async Task<bool> IsNameTaken(string name)
+    public async Task<bool> DoesNameExistAsync(string name)
     {
       return await _provider.WorkspacesTypes.AnyAsync(wt => string.Equals(wt.Name, name));
     }
