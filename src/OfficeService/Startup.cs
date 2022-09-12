@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using DigitalOffice.Kernel.RedisSupport.Extensions;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
@@ -9,7 +10,6 @@ using LT.DigitalOffice.Kernel.Configurations;
 using LT.DigitalOffice.Kernel.EFSupport.Extensions;
 using LT.DigitalOffice.Kernel.EFSupport.Helpers;
 using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
 using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
 using LT.DigitalOffice.Kernel.RedisSupport.Constants;
@@ -27,7 +27,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using StackExchange.Redis;
 
 namespace LT.DigitalOffice.OfficeService
 {
@@ -112,20 +111,7 @@ namespace LT.DigitalOffice.OfficeService
         .AddSqlServer(connStr)
         .AddRabbitMqCheck();
 
-      redisConnStr = Environment.GetEnvironmentVariable("RedisConnectionString");
-      if (string.IsNullOrEmpty(redisConnStr))
-      {
-        redisConnStr = Configuration.GetConnectionString("Redis");
-
-        Log.Information($"Redis connection string from appsettings.json was used. Value '{PasswordHider.Hide(redisConnStr)}'");
-      }
-      else
-      {
-        Log.Information($"Redis connection string from environment was used. Value '{PasswordHider.Hide(redisConnStr)}'");
-      }
-
-      services.AddSingleton<IConnectionMultiplexer>(
-        _ => ConnectionMultiplexer.Connect(redisConnStr + ",abortConnect=false,connectRetry=1,connectTimeout=2000"));
+      redisConnStr = services.AddRedisSingleton(Configuration);
 
       services.AddBusinessObjects();
 
@@ -136,11 +122,7 @@ namespace LT.DigitalOffice.OfficeService
     {
       app.UpdateDatabase<OfficeServiceDbContext>();
 
-      string error = FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Offices);
-      if (error is not null)
-      {
-        Log.Error(error);
-      }
+      FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Offices);
 
       app.UseForwardedHeaders();
 
