@@ -31,7 +31,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
         .Distinct()
         .ToList();
 
-      return offices.Select(
+      return offices?.Select(
         o => new OfficeData(
           o.Id,
           o.Name,
@@ -40,28 +40,6 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
           o.Latitude,
           o.Longitude,
           o.Users.Select(u => u.UserId).ToList())).ToList();
-    }
-
-    private async Task CreateCache(
-      List<Guid> userIds,
-      List<OfficeData> offices)
-    {
-      if (userIds == null)
-      {
-        return;
-      }
-
-      string key = userIds.GetRedisCacheHashCode();
-
-      if (offices != null && offices.Any())
-      {
-        await _globalCache.CreateAsync(
-          Cache.Offices,
-          key,
-          offices,
-          offices.Select(o => o.Id).ToList(),
-          TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
-      }
     }
 
     public GetOfficesConsumer(
@@ -84,7 +62,15 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 
       await context.RespondAsync<IOperationResult<IGetOfficesResponse>>(response);
 
-      await CreateCache(context.Message.UserIds, offices);
+      if (offices is not null && offices.Any())
+      {
+        await _globalCache.CreateAsync(
+          Cache.Offices,
+          context.Message.UserIds.GetRedisCacheKey(context.Message.GetBasicProperties()),
+          offices,
+          offices.Select(o => o.Id).ToList(),
+          TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
+      }
     }
   }
 }
