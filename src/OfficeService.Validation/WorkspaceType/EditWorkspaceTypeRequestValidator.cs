@@ -146,6 +146,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
     #endregion
 
   }
+
   public EditWorkspaceTypeRequestValidator(
     IWorkspaceTypeRepository workspaceTypeRepository)
   {
