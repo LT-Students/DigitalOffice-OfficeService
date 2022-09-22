@@ -63,7 +63,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
           "Workspace type name length cannot be more than 100 characters."
         },
         {
-          async x => !await _workspaceTypeRepository.DoesNameExistAsync(x.value?.ToString()?.Trim()),
+          async x => !await _workspaceTypeRepository.DoesNameExistAsync(x.value?.ToString().Trim()),
           "Workspace type name already exists."
         }
       }, CascadeMode.Stop);
