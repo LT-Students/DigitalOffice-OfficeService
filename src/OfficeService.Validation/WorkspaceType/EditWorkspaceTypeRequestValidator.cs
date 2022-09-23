@@ -23,8 +23,6 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
     Context = context;
     RequestedOperation = requestedOperation;
 
-    Thread.CurrentThread.CurrentUICulture = new CultureInfo("ru-RU");
-
     #region paths
 
     AddСorrectPaths(
@@ -55,7 +53,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
       new()
       {
         {
-          x => Task.FromResult(!string.IsNullOrEmpty(x.value?.ToString().Trim())),
+          x => Task.FromResult(!string.IsNullOrWhiteSpace(x.value?.ToString())),
           "Workspace type name cannot be empty."
         },
         {

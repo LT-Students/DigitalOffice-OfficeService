@@ -60,9 +60,8 @@ public class EditWorkspaceTypeCommand : IEditWorkspaceTypeCommand
         validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList());
     }
 
-    OperationResultResponse<bool> response = new();
-
-    response.Body = await _workspaceTypeRepository.EditAsync(workspaceTypeId, _mapper.Map(request));
+    OperationResultResponse<bool> response = new(
+      body: await _workspaceTypeRepository.EditAsync(workspaceTypeId, _mapper.Map(request)));
 
     if (!response.Body)
     {
