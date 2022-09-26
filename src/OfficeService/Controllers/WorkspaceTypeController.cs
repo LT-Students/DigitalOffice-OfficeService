@@ -5,6 +5,7 @@ using LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Dto.Models.Workspace;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType.Filters;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LT.DigitalOffice.OfficeService.Controllers
@@ -27,6 +28,15 @@ namespace LT.DigitalOffice.OfficeService.Controllers
       [FromQuery] WorkspaceTypeFindFilter filter)
     {
       return await command.ExecuteAsync(filter);
+    }
+
+    [HttpPatch("edit")]
+    public async Task<OperationResultResponse<bool>> EditAsync(
+      [FromServices] IEditWorkspaceTypeCommand command,
+      [FromQuery] Guid workspaceTypeId,
+      [FromBody] JsonPatchDocument<EditWorkspaceTypeRequest> request)
+    {
+      return await command.Execute(workspaceTypeId, request);
     }
   }
 }
