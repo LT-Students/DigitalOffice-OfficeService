@@ -144,13 +144,15 @@ namespace LT.DigitalOffice.OfficeService
         {
           ResultStatusCodes = new Dictionary<HealthStatus, int>
           {
-            { HealthStatus.Unhealthy, 200 },
+            { HealthStatus.Unhealthy, 503 },
             { HealthStatus.Healthy, 200 },
-            { HealthStatus.Degraded, 200 },
+            { HealthStatus.Degraded, 200 }
           },
           Predicate = check => check.Name != "masstransit-bus",
           ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
-        });
+        }).WithMetadata(new RestrictDomainAttribute(
+          "health.dev.ltdo.xyz",
+          "health.ltdo.xyz"));
       });
     }
 
