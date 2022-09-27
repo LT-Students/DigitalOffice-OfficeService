@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
@@ -11,6 +12,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db
   public class DbOfficeMapper : IDbOfficeMapper
   {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly Regex _nameRegex = new(@"^\s+|\s+$|\s+(?=\s)");
 
     public DbOfficeMapper(IHttpContextAccessor httpContextAccessor)
     {
@@ -27,7 +29,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db
       return new DbOffice
       {
         Id = Guid.NewGuid(),
-        Name = request.Name != null && request.Name.Trim().Any() ? request.Name.Trim() : null,
+        Name = !string.IsNullOrWhiteSpace(request.Name) ? _nameRegex.Replace(request.Name, "") : null,
         City = request.City.Trim(),
         Address = request.Address.Trim(),
         Latitude = request.Latitude,

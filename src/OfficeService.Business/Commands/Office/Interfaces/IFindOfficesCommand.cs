@@ -4,7 +4,7 @@ using LT.DigitalOffice.Kernel.Attributes;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters;
 
-namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Interface
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces
 {
   [AutoInject]
   public interface IFindOfficesCommand

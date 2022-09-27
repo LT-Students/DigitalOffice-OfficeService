@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.Kernel.Enums;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
+using LT.DigitalOffice.Kernel.Helpers.Interfaces;
 using LT.DigitalOffice.Kernel.Responses;
-using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interface;
+using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
 using LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
@@ -24,55 +24,51 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
     private readonly IDbOfficeMapper _mapper;
     private readonly ICreateOfficeRequestValidator _validator;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IResponseCreator _responseCreator;
 
     public CreateOfficeCommand(
       IAccessValidator accessValidator,
       IOfficeRepository officeRepository,
       IDbOfficeMapper mapper,
       ICreateOfficeRequestValidator validator,
-      IHttpContextAccessor httpContextAccessor)
+      IHttpContextAccessor httpContextAccessor,
+      IResponseCreator responseCreator)
     {
       _accessValidator = accessValidator;
       _officeRepository = officeRepository;
       _mapper = mapper;
       _validator = validator;
       _httpContextAccessor = httpContextAccessor;
+      _responseCreator = responseCreator;
     }
 
     public async Task<OperationResultResponse<Guid>> ExecuteAsync(CreateOfficeRequest request)
     {
-      if (!await _accessValidator.HasRightsAsync(Rights.EditCompany))
+      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanies))
       {
-        _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-
-        return new OperationResultResponse<Guid>
-        {
-          Status = OperationResultStatusType.Failed,
-          Errors = new() { "Not enough rights." }
-        };
+        _responseCreator.CreateFailureResponse<Guid>(
+          HttpStatusCode.Forbidden);
       }
 
-      if (!_validator.ValidateCustom(request, out List<string> errors))
-      {
-        _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+      ValidationResult validationResult = await _validator.ValidateAsync(request);
 
-        return new OperationResultResponse<Guid>
-        {
-          Status = OperationResultStatusType.Failed,
-          Errors = errors
-        };
+      if (!validationResult.IsValid)
+      {
+        _responseCreator.CreateFailureResponse<Guid>(
+          HttpStatusCode.BadRequest,
+          validationResult.Errors.Select(validationFailure => validationFailure.ErrorMessage).ToList());
       }
+
+      OperationResultResponse<Guid> response = new();
 
       DbOffice office = _mapper.Map(request);
       await _officeRepository.CreateAsync(office);
 
       _httpContextAccessor.HttpContext.Response.StatusCode = (int)HttpStatusCode.Created;
 
-      return new OperationResultResponse<Guid>
-      {
-        Status = OperationResultStatusType.FullSuccess,
-        Body = office.Id
-      };
+      response.Body = office.Id;
+
+      return response;
     }
   }
 }

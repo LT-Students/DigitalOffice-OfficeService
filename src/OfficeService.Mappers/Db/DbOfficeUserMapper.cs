@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
+using LT.DigitalOffice.Kernel.Extensions;
+using LT.DigitalOffice.Models.Broker.Publishing.Subscriber.Office;
 using LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
-using LT.DigitalOffice.Models.Broker.Requests.Office;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Users;
 using Microsoft.AspNetCore.Http;
-using LT.DigitalOffice.Kernel.Extensions;
 
 namespace LT.DigitalOffice.OfficeService.Mappers.Db
 {
@@ -17,7 +18,7 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db
       _httpContextAccessor = httpContextAccessor;
     }
 
-    public DbOfficeUser Map(ICreateUserOfficeRequest request)
+    public DbOfficeUser Map(ICreateUserOfficePublish request)
     {
       if (request == null)
       {
@@ -30,27 +31,22 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db
         OfficeId = request.OfficeId,
         UserId = request.UserId,
         CreatedAtUtc = DateTime.UtcNow,
-        CreatedBy = request.ModifiedBy,
+        CreatedBy = request.CreatedBy,
         IsActive = true
       };
     }
 
-    public DbOfficeUser Map(ChangeUserOfficeRequest request)
+    public List<DbOfficeUser> Map(CreateOfficeUsers request)
     {
-      if (request == null || !request.OfficeId.HasValue)
-      {
-        return null;
-      }
-
-      return new DbOfficeUser
+      return request?.UsersIds.ConvertAll(u => new DbOfficeUser
       {
         Id = Guid.NewGuid(),
-        OfficeId = request.OfficeId.Value,
-        UserId = request.UserId,
+        OfficeId = request.OfficeId,
+        UserId = u,
         CreatedAtUtc = DateTime.UtcNow,
         CreatedBy = _httpContextAccessor.HttpContext.GetUserId(),
         IsActive = true
-      };
+      });
     }
   }
 }

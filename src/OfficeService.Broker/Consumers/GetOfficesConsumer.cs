@@ -20,9 +20,8 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
   public class GetOfficesConsumer : IConsumer<IGetOfficesRequest>
   {
     private readonly IOfficeUserRepository _officeUserRepository;
-    private readonly IRedisHelper _redisHelper;
     private readonly IOptions<RedisConfig> _redisConfig;
-    private readonly ICacheNotebook _cacheNotebook;
+    private readonly IGlobalCacheRepository _globalCache;
 
     private async Task<List<OfficeData>> GetOfficesAsync(List<Guid> userIds)
     {
@@ -32,7 +31,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
         .Distinct()
         .ToList();
 
-      return offices.Select(
+      return offices?.Select(
         o => new OfficeData(
           o.Id,
           o.Name,
@@ -43,35 +42,14 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
           o.Users.Select(u => u.UserId).ToList())).ToList();
     }
 
-    private async Task CreateCache(
-      List<Guid> userIds,
-      List<OfficeData> offices)
-    {
-      if (userIds == null)
-      {
-        return;
-      }
-
-      string key = userIds.GetRedisCacheHashCode();
-
-      if (offices != null && offices.Any())
-      {
-        await _redisHelper.CreateAsync(Cache.Offices, key, offices, TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
-
-        _cacheNotebook.Add(offices.Select(o => o.Id).ToList(), Cache.Offices, key);
-      }
-    }
-
     public GetOfficesConsumer(
       IOfficeUserRepository officeUserRepository,
-      IRedisHelper redisHelper,
       IOptions<RedisConfig> redisConfig,
-      ICacheNotebook cacheNotebook)
+      IGlobalCacheRepository globalCache)
     {
       _officeUserRepository = officeUserRepository;
-      _redisHelper = redisHelper;
       _redisConfig = redisConfig;
-      _cacheNotebook = cacheNotebook;
+      _globalCache = globalCache;
     }
 
     public async Task Consume(ConsumeContext<IGetOfficesRequest> context)
@@ -84,7 +62,15 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 
       await context.RespondAsync<IOperationResult<IGetOfficesResponse>>(response);
 
-      await CreateCache(context.Message.UserIds, offices);
+      if (offices is not null && offices.Any())
+      {
+        await _globalCache.CreateAsync(
+          Cache.Offices,
+          context.Message.UserIds.GetRedisCacheKey(context.Message.GetBasicProperties()),
+          offices,
+          offices.Select(o => o.Id).ToList(),
+          TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
+      }
     }
   }
 }

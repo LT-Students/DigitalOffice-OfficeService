@@ -57,9 +57,22 @@ namespace LT.DigitalOffice.OfficeService.Data
       IQueryable<DbOffice> dbOffices = _provider.Offices
         .AsQueryable();
 
-      if (!filter.IncludeDeactivated)
+      if (filter.IsActive.HasValue)
       {
-        dbOffices = dbOffices.Where(x => x.IsActive);
+        dbOffices = dbOffices.Where(x => x.IsActive == filter.IsActive);
+      }
+
+      if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
+      {
+        dbOffices = dbOffices.Where(x =>
+          x.Name.ToLower().Contains(filter.NameIncludeSubstring.ToLower()));
+      }
+
+      if (filter.IsAscendingSort.HasValue)
+      {
+        dbOffices = filter.IsAscendingSort.Value 
+        ? dbOffices.OrderBy(o => o.Name)
+        : dbOffices.OrderByDescending(o => o.Name);
       }
 
       return (await dbOffices.Skip(filter.SkipCount).Take(filter.TakeCount).ToListAsync(), await dbOffices.CountAsync());
@@ -85,6 +98,18 @@ namespace LT.DigitalOffice.OfficeService.Data
     public async Task<DbOffice> GetAsync(Guid officeId)
     {
       return await _provider.Offices.FirstOrDefaultAsync(x => x.Id == officeId);
+    }
+
+    public async Task<List<DbOffice>> GetAsync(List<Guid> officesIds)
+    {
+      return await _provider.Offices.Where(o => officesIds.Contains(o.Id))
+        .Include(o => o.Users).Where(u => u.IsActive)
+        .ToListAsync();
+    }
+
+    public async Task<bool> DoesNameExistAsync(string name)
+    {
+      return !await _provider.Offices.AnyAsync(x => string.Equals(x.Name.ToLower(), name.ToLower()));
     }
   }
 }

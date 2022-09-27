@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using DigitalOffice.Kernel.RedisSupport.Extensions;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
 using LT.DigitalOffice.Kernel.BrokerSupport.Middlewares.Token;
 using LT.DigitalOffice.Kernel.Configurations;
+using LT.DigitalOffice.Kernel.EFSupport.Extensions;
+using LT.DigitalOffice.Kernel.EFSupport.Helpers;
 using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.Kernel.Helpers;
 using LT.DigitalOffice.Kernel.Middlewares.ApiInformation;
 using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
+using LT.DigitalOffice.Kernel.RedisSupport.Constants;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers;
-using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.OfficeService.Broker.Consumers;
 using LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef;
 using LT.DigitalOffice.OfficeService.Models.Dto.Configuration;
@@ -25,13 +27,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using StackExchange.Redis;
 
 namespace LT.DigitalOffice.OfficeService
 {
   public class Startup : BaseApiInfo
   {
     public const string CorsPolicyName = "LtDoCorsPolicy";
+    private string redisConnStr;
 
     private readonly RabbitMqConfig _rabbitMqConfig;
     private readonly BaseServiceInfoConfig _serviceInfoConfig;
@@ -50,7 +52,7 @@ namespace LT.DigitalOffice.OfficeService
         .GetSection(BaseServiceInfoConfig.SectionName)
         .Get<BaseServiceInfoConfig>();
 
-      Version = "1.0.0.0";
+      Version = "1.0.3.0";
       Description = "OfficeService is an API that intended to work with offices.";
       StartTime = DateTime.UtcNow;
       ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";
@@ -98,18 +100,7 @@ namespace LT.DigitalOffice.OfficeService
         })
         .AddNewtonsoftJson();
 
-
-      string connStr = Environment.GetEnvironmentVariable("ConnectionString");
-      if (string.IsNullOrEmpty(connStr))
-      {
-        connStr = Configuration.GetConnectionString("SQLConnectionString");
-
-        Log.Information($"SQL connection string from appsettings.json was used. Value '{HidePasswordHelper.HidePassword(connStr)}'.");
-      }
-      else
-      {
-        Log.Information($"SQL connection string from environment was used. Value '{HidePasswordHelper.HidePassword(connStr)}'.");
-      }
+      string connStr = ConnectionStringHandler.Get(Configuration);
 
       services.AddDbContext<OfficeServiceDbContext>(options =>
       {
@@ -120,23 +111,7 @@ namespace LT.DigitalOffice.OfficeService
         .AddSqlServer(connStr)
         .AddRabbitMqCheck();
 
-      string redisConnStr = Environment.GetEnvironmentVariable("RedisConnectionString");
-      if (string.IsNullOrEmpty(redisConnStr))
-      {
-        redisConnStr = Configuration.GetConnectionString("Redis");
-
-        Log.Information($"Redis connection string from appsettings.json was used. Value '{HidePasswordHelper.HidePassword(redisConnStr)}'");
-      }
-      else
-      {
-        Log.Information($"Redis connection string from environment was used. Value '{HidePasswordHelper.HidePassword(redisConnStr)}'");
-      }
-
-      services.AddSingleton<IConnectionMultiplexer>(
-        x => ConnectionMultiplexer.Connect(redisConnStr));
-
-      services.AddTransient<ICacheNotebook, CacheNotebook>();
-      services.AddTransient<IRedisHelper, RedisHelper>();
+      redisConnStr = services.AddRedisSingleton(Configuration);
 
       services.AddBusinessObjects();
 
@@ -145,7 +120,9 @@ namespace LT.DigitalOffice.OfficeService
 
     public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
     {
-      UpdateDatabase(app);
+      app.UpdateDatabase<OfficeServiceDbContext>();
+
+      FlushRedisDbHelper.FlushDatabase(redisConnStr, Cache.Offices);
 
       app.UseForwardedHeaders();
 
@@ -163,7 +140,7 @@ namespace LT.DigitalOffice.OfficeService
       {
         endpoints.MapControllers().RequireCors(CorsPolicyName);
 
-        endpoints.MapHealthChecks($"/{_serviceInfoConfig.Id}/hc", new HealthCheckOptions
+        endpoints.MapHealthChecks("/hc", new HealthCheckOptions
         {
           ResultStatusCodes = new Dictionary<HealthStatus, int>
           {
@@ -214,7 +191,9 @@ namespace LT.DigitalOffice.OfficeService
       {
         x.AddConsumer<CreateUserOfficeConsumer>();
         x.AddConsumer<GetOfficesConsumer>();
-        x.AddConsumer<DisactivateUserConsumer>();
+        x.AddConsumer<DisactivateOfficeUserConsumer>();
+        x.AddConsumer<FilterOfficesUsersConsumer>();
+        x.AddConsumer<CheckWorkspaceIsBookableConsumer>();
 
         x.UsingRabbitMq((context, cfg) =>
           {
@@ -247,21 +226,20 @@ namespace LT.DigitalOffice.OfficeService
         ep.ConfigureConsumer<CreateUserOfficeConsumer>(context);
       });
 
-      cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivateUserEndpoint, ep =>
+      cfg.ReceiveEndpoint(_rabbitMqConfig.DisactivateOfficeUserEndpoint, ep =>
       {
-        ep.ConfigureConsumer<DisactivateUserConsumer>(context);
+        ep.ConfigureConsumer<DisactivateOfficeUserConsumer>(context);
       });
-    }
 
-    private void UpdateDatabase(IApplicationBuilder app)
-    {
-      using var serviceScope = app.ApplicationServices
-        .GetRequiredService<IServiceScopeFactory>()
-        .CreateScope();
+      cfg.ReceiveEndpoint(_rabbitMqConfig.FilterOfficesEndpoint, ep =>
+      {
+        ep.ConfigureConsumer<FilterOfficesUsersConsumer>(context);
+      });
 
-      using var context = serviceScope.ServiceProvider.GetService<OfficeServiceDbContext>();
-
-      context.Database.Migrate();
+      cfg.ReceiveEndpoint(_rabbitMqConfig.CheckWorkspaceIsBookableEndpoint, ep =>
+      {
+        ep.ConfigureConsumer<CheckWorkspaceIsBookableConsumer>(context);
+      });
     }
 
     #endregion
