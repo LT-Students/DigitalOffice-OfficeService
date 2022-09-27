@@ -13,6 +13,7 @@ using LT.DigitalOffice.OfficeService.Mappers.Db.WorkspaceType.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType;
 using LT.DigitalOffice.OfficeService.Validation.WorkspaceType.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
 {
@@ -24,6 +25,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
     private readonly ICreateWorkspaceTypeRequestValidator _requestValidator;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IResponseCreator _responseCreator;
+    private readonly ILogger<CreateWorkspaceTypeCommand> _logger;
 
     public CreateWorkspaceTypeCommand(
       IAccessValidator accessValidator,
@@ -31,7 +33,8 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
       IDbWorkspaceTypeMapper mapper,
       ICreateWorkspaceTypeRequestValidator requestValidator,
       IHttpContextAccessor httpContextAccessor,
-      IResponseCreator responseCreator)
+      IResponseCreator responseCreator,
+      ILogger<CreateWorkspaceTypeCommand> logger)
     {
       _accessValidator = accessValidator;
       _repository = repository;
@@ -39,10 +42,15 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
       _requestValidator = requestValidator;
       _httpContextAccessor = httpContextAccessor;
       _responseCreator = responseCreator;
+      _logger = logger;
     }
 
     public async Task<OperationResultResponse<Guid?>> ExecuteAsync(CreateWorkspaceTypeRequest request)
     {
+      //TODO: REMOVE
+      _logger.LogInformation($"DEBUG DATA: {_httpContextAccessor.HttpContext.Request.Host.Host}");
+      _logger.LogInformation(_httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString());
+
       if (!await _accessValidator.HasRightsAsync(
             Rights.AddEditRemoveCompanyData,
             Rights.AddEditRemoveCompanies))
