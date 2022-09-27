@@ -12,8 +12,6 @@ using LT.DigitalOffice.OfficeService.Mappers.Models.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Models;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 {
@@ -23,30 +21,21 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
     private readonly IOfficeInfoMapper _mapper;
     private readonly IBaseFindFilterValidator _baseFindValidator;
     private readonly IResponseCreator _responseCreator;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<FindOfficesCommand> _logger;
 
     public FindOfficesCommand(
       IOfficeRepository officeRepository,
       IOfficeInfoMapper mapper,
       IBaseFindFilterValidator baseFindValidator,
-      IResponseCreator responseCreator,
-      IHttpContextAccessor httpContextAccessor,
-      ILogger<FindOfficesCommand> logger)
+      IResponseCreator responseCreator)
     {
       _officeRepository = officeRepository;
       _mapper = mapper;
       _baseFindValidator = baseFindValidator;
       _responseCreator = responseCreator;
-      _httpContextAccessor = httpContextAccessor;
-      _logger = logger;
     }
 
     public async Task<FindResultResponse<OfficeInfo>> ExecuteAsync(OfficeFindFilter filter)
     {
-      //TODO: REMOVE
-      _logger.LogInformation($"REMOTE IP: {_httpContextAccessor.HttpContext.Request.Host.Value}");
-
       if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors))
       {
         return _responseCreator.CreateFailureFindResponse<OfficeInfo>(HttpStatusCode.BadRequest, errors);
