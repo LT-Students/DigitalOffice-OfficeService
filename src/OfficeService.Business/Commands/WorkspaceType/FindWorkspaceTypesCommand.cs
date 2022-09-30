@@ -12,8 +12,6 @@ using LT.DigitalOffice.OfficeService.Mappers.Models.WorkspaceType.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Models.Workspace;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType.Filters;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
 {
@@ -21,33 +19,23 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType
   {
     private readonly IWorkspaceTypeRepository _workspaceTypeRepository;
     private readonly IWorkspaceTypeInfoMapper _mapper;
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IBaseFindFilterValidator _baseFindValidator;
     private readonly IResponseCreator _responseCreator;
-    private readonly ILogger<FindWorkspaceTypesCommand> _logger;
 
     public FindWorkspaceTypesCommand(
       IWorkspaceTypeRepository workspaceTypeRepository,
       IWorkspaceTypeInfoMapper mapper,
-      IHttpContextAccessor httpContextAccessor,
       IBaseFindFilterValidator baseFindValidator,
-      IResponseCreator responseCreator,
-      ILogger<FindWorkspaceTypesCommand> logger)
+      IResponseCreator responseCreator)
     {
       _workspaceTypeRepository = workspaceTypeRepository;
       _mapper = mapper;
-      _httpContextAccessor = httpContextAccessor;
       _baseFindValidator = baseFindValidator;
       _responseCreator = responseCreator;
-      _logger = logger;
     }
 
     public async Task<FindResultResponse<WorkspaceTypeInfo>> ExecuteAsync(WorkspaceTypeFindFilter filter)
     {
-      //TODO: REMOVE
-      _logger.LogInformation($"DEBUG DATA: {_httpContextAccessor.HttpContext.Request.Host.Host}");
-      _logger.LogInformation(_httpContextAccessor.HttpContext.Connection.RemoteIpAddress.ToString());
-
       if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors))
       {
         return _responseCreator.CreateFailureFindResponse<WorkspaceTypeInfo>(
