@@ -70,7 +70,7 @@ namespace LT.DigitalOffice.OfficeService.Data
 
       if (filter.IsAscendingSort.HasValue)
       {
-        dbOffices = filter.IsAscendingSort.Value 
+        dbOffices = filter.IsAscendingSort.Value
         ? dbOffices.OrderBy(o => o.Name)
         : dbOffices.OrderByDescending(o => o.Name);
       }
