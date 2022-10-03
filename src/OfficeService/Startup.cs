@@ -15,10 +15,12 @@ using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
 using LT.DigitalOffice.Kernel.RedisSupport.Constants;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers;
 using LT.DigitalOffice.OfficeService.Broker.Consumers;
+using LT.DigitalOffice.OfficeService.Business;
 using LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef;
 using LT.DigitalOffice.OfficeService.Models.Dto.Configuration;
 using MassTransit;
 using MassTransit.RabbitMqTransport;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
@@ -90,6 +92,8 @@ namespace LT.DigitalOffice.OfficeService
       services.Configure<TokenConfiguration>(Configuration.GetSection("CheckTokenMiddleware"));
       services.Configure<BaseRabbitMqConfig>(Configuration.GetSection(BaseRabbitMqConfig.SectionName));
       services.Configure<BaseServiceInfoConfig>(Configuration.GetSection(BaseServiceInfoConfig.SectionName));
+
+      services.AddMediatR(typeof(AssemblyMarker));
 
       services.AddHttpContextAccessor();
       services
