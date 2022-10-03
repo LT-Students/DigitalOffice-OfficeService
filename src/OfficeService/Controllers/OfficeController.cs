@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
-using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
-using LT.DigitalOffice.OfficeService.Models.Dto.Models;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
+using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Responses;
+using LT.DigitalOffice.Kernel.Validators.Interfaces;
+using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
+using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
+using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters;
+using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters;
 
 namespace LT.DigitalOffice.OfficeService.Controllers
 {
@@ -14,6 +18,17 @@ namespace LT.DigitalOffice.OfficeService.Controllers
   [ApiController]
   public class OfficeController : ControllerBase
   {
+    private readonly IMediator _mediator;
+    private readonly IBaseFindFilterValidator _baseFindValidator;
+
+    public OfficeController(
+      IMediator mediator,
+      IBaseFindFilterValidator baseFindValidator)
+    {
+      _mediator = mediator;
+      _baseFindValidator = baseFindValidator;
+    }
+
     [HttpPost("create")]
     public async Task<OperationResultResponse<Guid>> CreateAsync(
       [FromServices] ICreateOfficeCommand command,
@@ -23,11 +38,16 @@ namespace LT.DigitalOffice.OfficeService.Controllers
     }
 
     [HttpGet("find")]
-    public async Task<FindResultResponse<OfficeInfo>> FindAsync(
-      [FromServices] IFindOfficesCommand command,
-      [FromQuery] OfficeFindFilter filter)
+    public async Task<IActionResult> FindAsync(
+      [FromQuery] OfficeFindFilter filter,
+      CancellationToken ct)
     {
-      return await command.ExecuteAsync(filter);
+      if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors))
+      {
+        return BadRequest(errors);
+      }
+
+      return Ok(await _mediator.Send(filter, ct));
     }
 
     [HttpPatch("edit")]
