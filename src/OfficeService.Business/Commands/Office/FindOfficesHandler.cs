@@ -1,38 +1,61 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Responses;
-using LT.DigitalOffice.OfficeService.Data.Interfaces;
+using LT.DigitalOffice.OfficeService.Data.Provider;
 using LT.DigitalOffice.OfficeService.Mappers.Models.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Models;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 {
   public class FindOfficesHandler : IRequestHandler<OfficeFindFilter, FindResultResponse<OfficeInfo>>
   {
-    private readonly IOfficeRepository _officeRepository;
+    private readonly IDataProvider _provider;
     private readonly IOfficeInfoMapper _mapper;
 
     public FindOfficesHandler(
-      IOfficeRepository officeRepository,
+      IDataProvider provider,
       IOfficeInfoMapper mapper)
     {
-      _officeRepository = officeRepository;
+      _provider = provider;
       _mapper = mapper;
     }
 
     public async Task<FindResultResponse<OfficeInfo>> Handle(OfficeFindFilter filter, CancellationToken ct)
     {
-      (List<DbOffice> offices, int totalCount) = await _officeRepository.FindAsync(filter);
+      IQueryable<DbOffice> dbOffices = _provider.Offices.AsQueryable();
+
+      if (filter.IsActive.HasValue)
+      {
+        dbOffices = dbOffices.Where(x => x.IsActive == filter.IsActive);
+      }
+
+      if (!string.IsNullOrWhiteSpace(filter.NameIncludeSubstring))
+      {
+        dbOffices = dbOffices.Where(x =>
+          x.Name.Contains(filter.NameIncludeSubstring));
+      }
+
+      if (filter.IsAscendingSort.HasValue)
+      {
+        dbOffices = filter.IsAscendingSort.Value
+          ? dbOffices.OrderBy(o => o.Name)
+          : dbOffices.OrderByDescending(o => o.Name);
+      }
 
       return new FindResultResponse<OfficeInfo>
       {
-        Body = offices.Select(_mapper.Map).ToList(),
-        TotalCount = totalCount
+        TotalCount = await dbOffices.CountAsync(ct),
+        Body = dbOffices
+          .Skip(filter.SkipCount)
+          .Take(filter.TakeCount)
+          .AsEnumerable()
+          .Select(_mapper.Map)
+          .ToList()
       };
     }
   }
