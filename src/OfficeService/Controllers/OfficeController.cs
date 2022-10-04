@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Validators.Interfaces;
-using LT.DigitalOffice.OfficeService.Business.Commands.Office;
+using LT.DigitalOffice.OfficeService.Business.Commands.Office.Find;
 using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
 using MediatR;
