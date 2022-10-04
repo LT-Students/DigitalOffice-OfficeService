@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.Kernel.Attributes;
 using Microsoft.AspNetCore.JsonPatch;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters;
 
 namespace LT.DigitalOffice.OfficeService.Data.Interfaces
 {

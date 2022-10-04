@@ -1,8 +1,7 @@
 ﻿using LT.DigitalOffice.Kernel.Attributes;
 using LT.DigitalOffice.OfficeService.Models.Db;
-using LT.DigitalOffice.OfficeService.Models.Dto.Models;
 
-namespace LT.DigitalOffice.OfficeService.Mappers.Models.Interfaces
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces
 {
   [AutoInject]
   public interface IOfficeInfoMapper

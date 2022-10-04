@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LT.DigitalOffice.OfficeService.Models.Dto.Models
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 {
   public record OfficeInfo
   {

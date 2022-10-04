@@ -2,11 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Responses;
+using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
 using LT.DigitalOffice.OfficeService.Data.Provider;
 using LT.DigitalOffice.OfficeService.Mappers.Models.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
-using LT.DigitalOffice.OfficeService.Models.Dto.Models;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

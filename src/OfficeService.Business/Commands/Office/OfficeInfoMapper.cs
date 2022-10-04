@@ -1,8 +1,9 @@
-﻿using LT.DigitalOffice.OfficeService.Mappers.Models.Interfaces;
+﻿using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
+using LT.DigitalOffice.OfficeService.Mappers.Models.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Models;
 
-namespace LT.DigitalOffice.OfficeService.Mappers.Models
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
 {
   public class OfficeInfoMapper : IOfficeInfoMapper
   {
