@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Find
 {
   public record OfficeInfo
   {

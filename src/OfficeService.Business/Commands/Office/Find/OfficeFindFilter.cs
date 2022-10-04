@@ -3,7 +3,7 @@ using LT.DigitalOffice.Kernel.Responses;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LT.DigitalOffice.OfficeService.Business.Commands.Office
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Find
 {
   public record OfficeFindFilter : BaseFindFilter, IRequest<FindResultResponse<OfficeInfo>>
   {
