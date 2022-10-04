@@ -42,7 +42,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
       [FromQuery] OfficeFindFilter filter,
       CancellationToken ct)
     {
-      if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors))
+      if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors) || filter is null)
       {
         return BadRequest(errors);
       }
