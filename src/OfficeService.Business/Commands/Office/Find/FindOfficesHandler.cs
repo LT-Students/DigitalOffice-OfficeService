@@ -10,6 +10,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Find
 {
   public class FindOfficesHandler : IRequestHandler<OfficeFindFilter, FindResultResponse<OfficeInfo>>
   {
+    //TODO: Change return entity to a new one without errors property
     private readonly IDataProvider _provider;
 
     public FindOfficesHandler(
