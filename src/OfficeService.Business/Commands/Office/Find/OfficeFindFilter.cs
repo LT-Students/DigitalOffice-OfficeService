@@ -1,9 +1,11 @@
 ﻿using LT.DigitalOffice.Kernel.Requests;
+using LT.DigitalOffice.Kernel.Responses;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Find
 {
-  public record OfficeFindFilter : BaseFindFilter
+  public record OfficeFindFilter : BaseFindFilter, IRequest<FindResultResponse<OfficeInfo>>
   {
     [FromQuery(Name = "isAscendingSort")]
     public bool? IsAscendingSort { get; set; }

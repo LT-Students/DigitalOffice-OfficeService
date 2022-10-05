@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.Kernel.Attributes;
 using Microsoft.AspNetCore.JsonPatch;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters;
 
 namespace LT.DigitalOffice.OfficeService.Data.Interfaces
 {
@@ -16,8 +15,6 @@ namespace LT.DigitalOffice.OfficeService.Data.Interfaces
     Task<DbOffice> GetAsync(Guid officeId);
 
     Task<List<DbOffice>> GetAsync(List<Guid> officesIds);
-
-    Task<(List<DbOffice>, int totalCount)> FindAsync(OfficeFindFilter filter);
 
     Task<bool> EditAsync(Guid officeId, JsonPatchDocument<DbOffice> request);
 
