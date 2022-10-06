@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using FluentValidation.Validators;
 using LT.DigitalOffice.Kernel.Validators;
 using LT.DigitalOffice.OfficeService.Data.WorkspaceType.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Dto.Enums.Workspace;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType;
 using LT.DigitalOffice.OfficeService.Validation.WorkspaceType.Interfaces;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.OfficeService.Validation.WorkspaceType;
@@ -18,7 +16,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
 {
   private readonly IWorkspaceTypeRepository _workspaceTypeRepository;
 
-  private async Task HandleInternalPropertyValidationAsync(Operation<EditWorkspaceTypeRequest> requestedOperation, CustomContext context)
+  private async Task HandleInternalPropertyValidationAsync(Operation<EditWorkspaceTypeRequest> requestedOperation, ValidationContext<JsonPatchDocument<EditWorkspaceTypeRequest>> context)
   {
     Context = context;
     RequestedOperation = requestedOperation;

@@ -2,12 +2,11 @@
 using System.Linq;
 using System.Text.RegularExpressions;
 using FluentValidation;
-using FluentValidation.Validators;
 using LT.DigitalOffice.Kernel.Validators;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
-using LT.DigitalOffice.OfficeService.Models.Db;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
 using LT.DigitalOffice.OfficeService.Validation.Office.Interfaces;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 
 namespace LT.DigitalOffice.OfficeService.Validation.Office
@@ -18,7 +17,7 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
 
     private void HandleInternalPropertyValidation(
       Operation<EditOfficeRequest> requestedOperation,
-      CustomContext context)
+      ValidationContext<JsonPatchDocument<EditOfficeRequest>> context)
     {
       Context = context;
       RequestedOperation = requestedOperation;
@@ -99,6 +98,6 @@ namespace LT.DigitalOffice.OfficeService.Validation.Office
               })
             .WithMessage("Name already exists.");
         });
-    } 
+    }
   }
 }
