@@ -9,7 +9,8 @@ using MediatR;
 
 namespace LT.DigitalOffice.OfficeService
 {
-  public class ValidationPipelineBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+  public class ValidationPipelineBehaviour<TRequest, TResponse>
+    : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
   {
     //TODO: move into kernel
     private readonly IEnumerable<IValidator<TRequest>> _validators;
@@ -19,7 +20,10 @@ namespace LT.DigitalOffice.OfficeService
       _validators = validators;
     }
 
-    public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken, RequestHandlerDelegate<TResponse> next)
+    public async Task<TResponse> Handle(
+      TRequest request,
+      CancellationToken cancellationToken,
+      RequestHandlerDelegate<TResponse> next)
     {
       if (!_validators.Any())
       {
@@ -27,8 +31,12 @@ namespace LT.DigitalOffice.OfficeService
       }
 
       ValidationContext<TRequest> context = new(request);
-      ValidationResult[] validationResults = await Task.WhenAll(_validators.Select(v => v.ValidateAsync(context, cancellationToken)));
-      List<ValidationFailure> failures = validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
+      ValidationResult[] validationResults = await Task.WhenAll(
+        _validators.Select(v => v.ValidateAsync(context, cancellationToken)));
+      List<ValidationFailure> failures = validationResults
+        .SelectMany(r => r.Errors)
+        .Where(f => f != null).ToList();
+
       if (failures.Count != 0)
       {
         throw new BadRequestException(failures.Select(f => f.ErrorMessage));

@@ -42,7 +42,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
     {
       if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanies))
       {
-        //TODO: Forbid() cannot be use without authentication handler
+        //TODO: Forbid() cannot be used without authentication handler
         return StatusCode(403);
       }
 
