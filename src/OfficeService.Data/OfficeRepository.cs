@@ -9,7 +9,6 @@ using LT.DigitalOffice.OfficeService.Models.Db;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace LT.DigitalOffice.OfficeService.Data
 {
@@ -17,28 +16,13 @@ namespace LT.DigitalOffice.OfficeService.Data
   {
     private readonly IDataProvider _provider;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<OfficeRepository> _logger;
 
     public OfficeRepository(
       IDataProvider provider,
-      IHttpContextAccessor httpContextAccessor,
-      ILogger<OfficeRepository> logger)
+      IHttpContextAccessor httpContextAccessor)
     {
       _httpContextAccessor = httpContextAccessor;
       _provider = provider;
-      _logger = logger;
-    }
-
-    public async Task CreateAsync(DbOffice office)
-    {
-      if (office == null)
-      {
-        _logger.LogWarning(new ArgumentNullException(nameof(office)).Message);
-        return;
-      }
-
-      _provider.Offices.Add(office);
-      await _provider.SaveAsync();
     }
 
     public async Task<bool> DoesExistAsync(Guid officeId)
