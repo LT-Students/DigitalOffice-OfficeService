@@ -1,16 +1,15 @@
 ﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using LT.DigitalOffice.Kernel.Responses;
+using DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.OfficeService.Data.Provider;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Find
 {
-  public class FindOfficesHandler : IRequestHandler<OfficeFindFilter, FindResultResponse<OfficeInfo>>
+  public class FindOfficesHandler : IRequestHandler<OfficeFindFilter, FindResult<OfficeInfo>>
   {
-    //TODO: Change return entity to a new one without errors property
     private readonly IDataProvider _provider;
 
     public FindOfficesHandler(
@@ -19,7 +18,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Find
       _provider = provider;
     }
 
-    public async Task<FindResultResponse<OfficeInfo>> Handle(OfficeFindFilter filter, CancellationToken ct)
+    public async Task<FindResult<OfficeInfo>> Handle(OfficeFindFilter filter, CancellationToken ct)
     {
       IQueryable<OfficeInfo> offices = _provider.Offices.Select(o => new OfficeInfo
       {
@@ -50,7 +49,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Find
           : offices.OrderByDescending(o => o.Name);
       }
 
-      return new FindResultResponse<OfficeInfo>
+      return new FindResult<OfficeInfo>
       {
         TotalCount = await offices.CountAsync(ct),
         Body = await offices

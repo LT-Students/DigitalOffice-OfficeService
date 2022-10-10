@@ -9,8 +9,6 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces
   [AutoInject]
   public interface IDbOfficeUserMapper
   {
-    DbOfficeUser Map(ICreateUserOfficePublish request);
-
     List<DbOfficeUser> Map(CreateOfficeUsers request);
   }
 }
