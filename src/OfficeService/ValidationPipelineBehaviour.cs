@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
+using LT.DigitalOffice.Kernel.Exceptions.Models;
 using MediatR;
 
 namespace LT.DigitalOffice.OfficeService
@@ -27,7 +28,7 @@ namespace LT.DigitalOffice.OfficeService
       ValidationResult[] validationResults = await Task.WhenAll(_validators.Select(v => v.ValidateAsync(context, cancellationToken)));
       List<ValidationFailure> failures = validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
       if (failures.Count != 0)
-        throw new ValidationException(failures);
+        throw new BadRequestException(failures.Select(f => f.ErrorMessage));
       return await next();
     }
   }
