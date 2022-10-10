@@ -37,7 +37,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 
         await _globalCache.RemoveAsync(user.Id);
 
-        _logger.LogInformation($"User with Id {context.Message.UserId} activated");
+        _logger.LogInformation($"User with Id {context.Message.UserId} activated in office with Id {user.OfficeId}");
       }
       else
       {
