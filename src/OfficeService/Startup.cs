@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using DigitalOffice.Kernel.RedisSupport.Extensions;
+using FluentValidation;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
@@ -120,6 +121,9 @@ namespace LT.DigitalOffice.OfficeService
       services.AddBusinessObjects();
 
       ConfigureMassTransit(services);
+
+      services.AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly);
+      services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
     }
 
     public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
