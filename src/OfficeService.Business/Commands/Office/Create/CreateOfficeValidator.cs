@@ -11,19 +11,19 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Create
 
     public CreateOfficeValidator(IDataProvider provider)
     {
-      When(x => !string.IsNullOrWhiteSpace(x.Name), () =>
+      When(r => !string.IsNullOrWhiteSpace(r.Name), () =>
       {
-        RuleFor(x => x.Name)
+        RuleFor(r => r.Name)
           .MustAsync(async (name, ct) =>
             !await provider.Offices.AnyAsync(o => string.Equals(o.Name, _nameRegex.Replace(name, "")), ct))
           .WithMessage("Name already exists.");
       });
 
-      RuleFor(request => request.City)
+      RuleFor(r => r.City)
         .NotEmpty().WithMessage("City must not be empty.")
         .MaximumLength(200).WithMessage("City's name is too long.");
 
-      RuleFor(request => request.Address)
+      RuleFor(r => r.Address)
         .NotEmpty().WithMessage("Address must not be empty.");
     }
   }

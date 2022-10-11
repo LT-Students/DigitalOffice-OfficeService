@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using DigitalOffice.Kernel.Behaviours;
 using DigitalOffice.Kernel.RedisSupport.Extensions;
 using FluentValidation;
 using HealthChecks.UI.Client;
