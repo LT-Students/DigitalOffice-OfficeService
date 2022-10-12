@@ -45,7 +45,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
         return StatusCode(403);
       }
 
-      return Ok(await _mediator.Send(request, ct));
+      return Created("/office", await _mediator.Send(request, ct));
     }
 
     [HttpGet("find")]
