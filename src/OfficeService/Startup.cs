@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using DigitalOffice.Kernel.Behaviours;
 using DigitalOffice.Kernel.RedisSupport.Extensions;
+using FluentValidation;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
@@ -54,7 +56,7 @@ namespace LT.DigitalOffice.OfficeService
         .GetSection(BaseServiceInfoConfig.SectionName)
         .Get<BaseServiceInfoConfig>();
 
-      Version = "1.0.3.0";
+      Version = "1.0.3.1";
       Description = "OfficeService is an API that intended to work with offices.";
       StartTime = DateTime.UtcNow;
       ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";
@@ -120,6 +122,9 @@ namespace LT.DigitalOffice.OfficeService
       services.AddBusinessObjects();
 
       ConfigureMassTransit(services);
+
+      services.AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly);
+      services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
     }
 
     public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)

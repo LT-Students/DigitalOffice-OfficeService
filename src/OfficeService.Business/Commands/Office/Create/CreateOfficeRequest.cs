@@ -1,6 +1,9 @@
-﻿namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office
+﻿using System;
+using MediatR;
+
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Create
 {
-  public record CreateOfficeRequest
+  public record CreateOfficeRequest : IRequest<Guid?>
   {
     public string Name { get; set; }
     public string City { get; set; }

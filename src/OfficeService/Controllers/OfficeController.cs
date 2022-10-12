@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
+using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Responses;
 using LT.DigitalOffice.Kernel.Validators.Interfaces;
+using LT.DigitalOffice.OfficeService.Business.Commands.Office.Create;
 using LT.DigitalOffice.OfficeService.Business.Commands.Office.Find;
 using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
 using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
@@ -20,21 +23,29 @@ namespace LT.DigitalOffice.OfficeService.Controllers
   {
     private readonly IMediator _mediator;
     private readonly IBaseFindFilterValidator _baseFindValidator;
+    private readonly IAccessValidator _accessValidator;
 
     public OfficeController(
       IMediator mediator,
-      IBaseFindFilterValidator baseFindValidator)
+      IBaseFindFilterValidator baseFindValidator,
+      IAccessValidator accessValidator)
     {
       _mediator = mediator;
       _baseFindValidator = baseFindValidator;
+      _accessValidator = accessValidator;
     }
 
     [HttpPost("create")]
-    public async Task<OperationResultResponse<Guid>> CreateAsync(
-      [FromServices] ICreateOfficeCommand command,
-      [FromBody] CreateOfficeRequest request)
+    public async Task<IActionResult> CreateAsync(
+      [FromBody] CreateOfficeRequest request,
+      CancellationToken ct)
     {
-      return await command.ExecuteAsync(request);
+      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanies))
+      {
+        return StatusCode(403);
+      }
+
+      return Created("/office", await _mediator.Send(request, ct));
     }
 
     [HttpGet("find")]

@@ -1,32 +1,32 @@
 ﻿using System;
-using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.OfficeService.Mappers.Db.Interfaces;
+using LT.DigitalOffice.OfficeService.Data.Provider;
 using LT.DigitalOffice.OfficeService.Models.Db;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 
-namespace LT.DigitalOffice.OfficeService.Mappers.Db
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Create
 {
-  public class DbOfficeMapper : IDbOfficeMapper
+  public class CreateOfficeHandler : IRequestHandler<CreateOfficeRequest, Guid?>
   {
-    private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly Regex _nameRegex = new(@"^\s+|\s+$|\s+(?=\s)");
+    private readonly IDataProvider _provider;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public DbOfficeMapper(IHttpContextAccessor httpContextAccessor)
+    public CreateOfficeHandler(
+      IDataProvider provider,
+      IHttpContextAccessor httpContextAccessor)
     {
+      _provider = provider;
       _httpContextAccessor = httpContextAccessor;
     }
 
-    public DbOffice Map(CreateOfficeRequest request)
+    public async Task<Guid?> Handle(CreateOfficeRequest request, CancellationToken ct)
     {
-      if (request == null)
-      {
-        return null;
-      }
-
-      return new DbOffice
+      DbOffice office = new()
       {
         Id = Guid.NewGuid(),
         Name = !string.IsNullOrWhiteSpace(request.Name) ? _nameRegex.Replace(request.Name, "") : null,
@@ -38,6 +38,11 @@ namespace LT.DigitalOffice.OfficeService.Mappers.Db
         CreatedBy = _httpContextAccessor.HttpContext.GetUserId(),
         IsActive = true
       };
+
+      await _provider.Offices.AddAsync(office, ct);
+      await _provider.SaveAsync();
+
+      return office.Id;
     }
   }
 }
