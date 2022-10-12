@@ -56,7 +56,7 @@ namespace LT.DigitalOffice.OfficeService
         .GetSection(BaseServiceInfoConfig.SectionName)
         .Get<BaseServiceInfoConfig>();
 
-      Version = "1.0.3.0";
+      Version = "1.0.3.1";
       Description = "OfficeService is an API that intended to work with offices.";
       StartTime = DateTime.UtcNow;
       ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";
