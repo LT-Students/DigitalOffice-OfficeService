@@ -24,7 +24,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Edit
 
     #region private methods
 
-    private async Task<bool> RemoveOfficeUserAsync(Guid officeId)
+    private async Task RemoveOfficeUserAsync(Guid officeId)
     {
       List<DbOfficeUser> dbUsers = await _provider.OfficesUsers.Where(x => x.OfficeId == officeId).ToListAsync();
       DateTime modifiedAtUtc = DateTime.UtcNow;
@@ -38,8 +38,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Edit
       }
 
       await _provider.SaveAsync();
-
-      return true;
     }
 
     private async Task<bool> EditOfficeAsync(Guid officeId, JsonPatchDocument<DbOffice> request, CancellationToken ct)
