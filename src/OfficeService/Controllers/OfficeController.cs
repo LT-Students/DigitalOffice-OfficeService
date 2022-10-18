@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
@@ -74,7 +75,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
         return StatusCode(403);
       }
 
-      var validationResult = await _validator.ValidateAsync(patch, ct);
+      ValidationResult validationResult = await _validator.ValidateAsync(patch, ct);
       if (!validationResult.IsValid)
       {
         return BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));

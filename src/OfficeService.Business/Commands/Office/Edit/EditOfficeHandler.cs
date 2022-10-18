@@ -111,7 +111,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Edit
     {
       bool result = await EditOfficeAsync(request.OfficeId, Map(request.Patch), ct);
 
-      var isActiveOperation = request.Patch.Operations.FirstOrDefault(
+      Operation<EditOfficePatch> isActiveOperation = request.Patch.Operations.FirstOrDefault(
         o => o.path.EndsWith(nameof(EditOfficePatch.IsActive), StringComparison.OrdinalIgnoreCase));
 
       if (isActiveOperation != default && !bool.Parse(isActiveOperation.value.ToString().Trim()))
