@@ -1,18 +1,19 @@
 ﻿using System.Collections.Generic;
 using FluentValidation;
 using LT.DigitalOffice.OfficeService.Broker.Requests.Interfaces;
-using LT.DigitalOffice.OfficeService.Data.Interfaces;
+using LT.DigitalOffice.OfficeService.Data.Provider;
+using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Users.Create
 {
   public class CreateOfficeUsersValidator : AbstractValidator<CreateOfficeUsersRequest>
   {
     public CreateOfficeUsersValidator(
-      IOfficeRepository officeRepository,
+      IDataProvider provider,
       IUserService userService)
     {
       RuleFor(r => r.OfficeId)
-        .MustAsync(async (id, _) => await officeRepository.DoesExistAsync(id))
+        .MustAsync(async (id, _) => await provider.Offices.AnyAsync(o => o.Id == id))
         .WithMessage("Office must exist.");
 
       RuleFor(r => r.UsersIds)

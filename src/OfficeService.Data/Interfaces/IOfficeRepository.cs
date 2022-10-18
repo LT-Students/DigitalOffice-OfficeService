@@ -11,8 +11,6 @@ namespace LT.DigitalOffice.OfficeService.Data.Interfaces
   {
     Task<List<DbOffice>> GetAsync(List<Guid> officesIds);
 
-    Task<bool> DoesExistAsync(Guid officeId);
-
     Task<bool> DoesNameExistAsync(string name);
   }
 }
