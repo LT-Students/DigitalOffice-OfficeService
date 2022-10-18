@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.OfficeService.Data.Interfaces;
 using LT.DigitalOffice.OfficeService.Data.Provider;
 using LT.DigitalOffice.OfficeService.Models.Db;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Data
@@ -14,27 +12,10 @@ namespace LT.DigitalOffice.OfficeService.Data
   public class OfficeUserRepository : IOfficeUserRepository
   {
     private readonly IDataProvider _provider;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public OfficeUserRepository(
-      IDataProvider provider,
-      IHttpContextAccessor httpContextAccessor)
+    public OfficeUserRepository(IDataProvider provider)
     {
       _provider = provider;
-      _httpContextAccessor = httpContextAccessor;
-    }
-
-    public async Task<bool> CreateAsync(DbOfficeUser dbOfficeUser)
-    {
-      if (dbOfficeUser is null)
-      {
-        return false;
-      }
-
-      _provider.OfficesUsers.Add(dbOfficeUser);
-      await _provider.SaveAsync();
-
-      return true;
     }
 
     public async Task<bool> CreateAsync(List<DbOfficeUser> dbOfficesUsers)
@@ -60,16 +41,6 @@ namespace LT.DigitalOffice.OfficeService.Data
       return await users.ToListAsync();
     }
 
-    public async Task<List<DbOfficeUser>> GetAsync(List<Guid> usersIds, Guid officeId)
-    {
-      IQueryable<DbOfficeUser> usersQuery = _provider.OfficesUsers
-        .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId)) 
-        .Include(ou => ou.Office)
-        .AsQueryable();
-
-      return await usersQuery.ToListAsync();
-    }
-
     public async Task<Guid?> RemoveAsync(Guid userId, Guid removedBy)
     {
       DbOfficeUser user = await _provider.OfficesUsers.FirstOrDefaultAsync(u => u.UserId == userId && u.IsActive);
@@ -85,24 +56,6 @@ namespace LT.DigitalOffice.OfficeService.Data
       }
 
       return null;
-    }
-
-    public async Task<bool> RemoveAsync(Guid officeId)
-    {
-      List<DbOfficeUser> dbUsers = await _provider.OfficesUsers.Where(x => x.OfficeId == officeId).ToListAsync();
-      DateTime modifiedAtUtc = DateTime.UtcNow;
-      Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
-
-      foreach (DbOfficeUser user in dbUsers)
-      {
-        user.IsActive = false;
-        user.ModifiedAtUtc = modifiedAtUtc;
-        user.ModifiedBy = senderId;
-      }
-
-      await _provider.SaveAsync();
-
-      return true;
     }
 
     public async Task<List<Guid>> RemoveAsync(List<Guid> usersIds, Guid? officeId)

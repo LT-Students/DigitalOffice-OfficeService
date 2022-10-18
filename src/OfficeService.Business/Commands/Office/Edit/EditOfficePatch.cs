@@ -1,6 +1,6 @@
-﻿namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office
+﻿namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Edit
 {
-  public record EditOfficeRequest
+  public record EditOfficePatch
   {
     public string Name { get; set; }
     public string City { get; set; }
