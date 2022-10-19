@@ -26,10 +26,5 @@ namespace LT.DigitalOffice.OfficeService.Data
         .Where(u => u.IsActive)
         .ToListAsync();
     }
-
-    public async Task<bool> DoesNameExistAsync(string name)
-    {
-      return !await _provider.Offices.AnyAsync(o => string.Equals(o.Name, name));
-    }
   }
 }

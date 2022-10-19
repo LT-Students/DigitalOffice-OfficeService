@@ -3,9 +3,10 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using FluentValidation;
 using LT.DigitalOffice.Kernel.Validators;
-using LT.DigitalOffice.OfficeService.Data.Interfaces;
+using LT.DigitalOffice.OfficeService.Data.Provider;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Edit
 {
@@ -78,7 +79,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Edit
     }
 
     public EditOfficeValidator(
-      IOfficeRepository _officeRepository)
+      IDataProvider provider)
     {
       RuleForEach(x => x.Operations)
         .Custom(HandleInternalPropertyValidation);
@@ -89,11 +90,13 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Edit
         {
           RuleFor(patch => patch)
             .MustAsync(async (patch, _) =>
-              {
-                return await _officeRepository.DoesNameExistAsync(
-                  _nameRegex.Replace(patch.Operations.FirstOrDefault(
-                    o => o.path.EndsWith(nameof(EditOfficePatch.Name), StringComparison.OrdinalIgnoreCase)).value?.ToString(), ""));
-              })
+            {
+              return !await provider.Offices.AnyAsync(o => string.Equals(
+                o.Name,
+                _nameRegex.Replace(patch.Operations.FirstOrDefault(
+                    op => op.path.EndsWith(nameof(EditOfficePatch.Name), StringComparison.OrdinalIgnoreCase)).value
+                  .ToString(), "")));
+            })
             .WithMessage("Name already exists.");
         });
     }
