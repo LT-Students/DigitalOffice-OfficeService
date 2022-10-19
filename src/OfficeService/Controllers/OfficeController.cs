@@ -18,7 +18,6 @@ namespace LT.DigitalOffice.OfficeService.Controllers
   {
     private readonly IMediator _mediator;
     private readonly IAccessValidator _accessValidator;
-    private readonly IEditOfficeValidator _validator;
 
     public OfficeController(
       IMediator mediator,
@@ -26,7 +25,6 @@ namespace LT.DigitalOffice.OfficeService.Controllers
     {
       _mediator = mediator;
       _accessValidator = accessValidator;
-      _validator = validator;
     }
 
     [HttpPost("create")]
