@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation.Results;
+using LT.DigitalOffice.Kernel.Exceptions.Models;
 using LT.DigitalOffice.Kernel.Extensions;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.OfficeService.Data.Provider;
@@ -21,6 +23,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Edit
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IGlobalCacheRepository _globalCache;
     private readonly IDataProvider _provider;
+    private readonly IEditOfficeValidator _validator;
 
     #region private methods
 
@@ -100,15 +103,23 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Office.Edit
     public EditOfficeHandler(
       IHttpContextAccessor httpContextAccessor,
       IGlobalCacheRepository globalCache,
-      IDataProvider provider)
+      IDataProvider provider,
+      IEditOfficeValidator validator)
     {
       _httpContextAccessor = httpContextAccessor;
       _globalCache = globalCache;
       _provider = provider;
+      _validator = validator;
     }
 
     public async Task<bool> Handle(EditOfficeRequest request, CancellationToken ct)
     {
+      ValidationResult validationResult = await _validator.ValidateAsync(request.Patch, ct);
+      if (!validationResult.IsValid)
+      {
+        throw new BadRequestException(validationResult.Errors.Select(e => e.ErrorMessage));
+      }
+
       bool result = await EditOfficeAsync(request.OfficeId, Map(request.Patch), ct);
 
       Operation<EditOfficePatch> isActiveOperation = request.Patch.Operations.FirstOrDefault(
