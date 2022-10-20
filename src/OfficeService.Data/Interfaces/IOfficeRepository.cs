@@ -10,7 +10,5 @@ namespace LT.DigitalOffice.OfficeService.Data.Interfaces
   public interface IOfficeRepository
   {
     Task<List<DbOffice>> GetAsync(List<Guid> officesIds);
-
-    Task<bool> DoesExistAsync(Guid officeId);
   }
 }

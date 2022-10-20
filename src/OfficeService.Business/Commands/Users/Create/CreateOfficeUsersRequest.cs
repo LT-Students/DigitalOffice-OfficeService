@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using MediatR;
 
-namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.Users
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Users.Create
 {
-  public record CreateOfficeUsers
+  public record CreateOfficeUsersRequest : IRequest<bool>
   {
     public Guid OfficeId { get; set; }
     public List<Guid> UsersIds { get; set; }
