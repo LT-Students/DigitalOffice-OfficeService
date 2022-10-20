@@ -77,8 +77,8 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace.Find
 
     #endregion
 
-      public FindWorkspacesHandler(
-        IBaseFindFilterValidator baseFindValidator,
+    public FindWorkspacesHandler(
+      IBaseFindFilterValidator baseFindValidator,
       IDataProvider provider)
     {
       _baseFindValidator = baseFindValidator;
@@ -94,11 +94,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace.Find
 
       (List<DbWorkspace> workspaces, int totalCount) = await FindWorkspacesAsync(filter, ct);
 
-      return new FindResult<WorkspaceInfo>
-      {
-        Body = workspaces.ConvertAll(Map),
-        TotalCount = totalCount
-      };
+      return new FindResult<WorkspaceInfo> { Body = workspaces.ConvertAll(Map), TotalCount = totalCount };
     }
   }
 }
