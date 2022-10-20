@@ -1,6 +1,7 @@
 ﻿using System;
+using LT.DigitalOffice.OfficeService.Models.Dto.Models.Workspace;
 
-namespace LT.DigitalOffice.OfficeService.Models.Dto.Models.Workspace
+namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace.Find
 {
   public record WorkspaceInfo
   {
