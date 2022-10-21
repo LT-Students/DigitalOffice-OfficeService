@@ -3,20 +3,19 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentValidation;
 using LT.DigitalOffice.Kernel.Validators;
-using LT.DigitalOffice.OfficeService.Data.WorkspaceType.Interfaces;
+using LT.DigitalOffice.OfficeService.Data.Provider;
 using LT.DigitalOffice.OfficeService.Models.Dto.Enums.Workspace;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType;
-using LT.DigitalOffice.OfficeService.Validation.WorkspaceType.Interfaces;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
+using Microsoft.EntityFrameworkCore;
 
-namespace LT.DigitalOffice.OfficeService.Validation.WorkspaceType;
+namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType.Edit;
 
-public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWorkspaceTypeRequest>, IEditWorkspaceTypeRequestValidator
+public class EditWorkspaceTypeValidator : BaseEditRequestValidator<EditWorkspaceTypePatch>, IEditWorkspaceTypeValidator
 {
-  private readonly IWorkspaceTypeRepository _workspaceTypeRepository;
+  private readonly IDataProvider _provider;
 
-  private async Task HandleInternalPropertyValidationAsync(Operation<EditWorkspaceTypeRequest> requestedOperation, ValidationContext<JsonPatchDocument<EditWorkspaceTypeRequest>> context)
+  private async Task HandleInternalPropertyValidationAsync(Operation<EditWorkspaceTypePatch> requestedOperation, ValidationContext<JsonPatchDocument<EditWorkspaceTypePatch>> context)
   {
     Context = context;
     RequestedOperation = requestedOperation;
@@ -26,27 +25,27 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
     AddСorrectPaths(
       new List<string>
       {
-        nameof(EditWorkspaceTypeRequest.Name),
-        nameof(EditWorkspaceTypeRequest.Description),
-        nameof(EditWorkspaceTypeRequest.StartTime),
-        nameof(EditWorkspaceTypeRequest.EndTime),
-        nameof(EditWorkspaceTypeRequest.BookingRule),
-        nameof(EditWorkspaceTypeRequest.IsActive)
+        nameof(EditWorkspaceTypePatch.Name),
+        nameof(EditWorkspaceTypePatch.Description),
+        nameof(EditWorkspaceTypePatch.StartTime),
+        nameof(EditWorkspaceTypePatch.EndTime),
+        nameof(EditWorkspaceTypePatch.BookingRule),
+        nameof(EditWorkspaceTypePatch.IsActive)
       });
 
-    AddСorrectOperations(nameof(EditWorkspaceTypeRequest.Name), new List<OperationType> { OperationType.Replace });
-    AddСorrectOperations(nameof(EditWorkspaceTypeRequest.Description), new List<OperationType> { OperationType.Replace });
-    AddСorrectOperations(nameof(EditWorkspaceTypeRequest.StartTime), new List<OperationType> { OperationType.Replace });
-    AddСorrectOperations(nameof(EditWorkspaceTypeRequest.EndTime), new List<OperationType> { OperationType.Replace });
-    AddСorrectOperations(nameof(EditWorkspaceTypeRequest.BookingRule), new List<OperationType> { OperationType.Replace });
-    AddСorrectOperations(nameof(EditWorkspaceTypeRequest.IsActive), new List<OperationType> { OperationType.Replace });
+    AddСorrectOperations(nameof(EditWorkspaceTypePatch.Name), new List<OperationType> { OperationType.Replace });
+    AddСorrectOperations(nameof(EditWorkspaceTypePatch.Description), new List<OperationType> { OperationType.Replace });
+    AddСorrectOperations(nameof(EditWorkspaceTypePatch.StartTime), new List<OperationType> { OperationType.Replace });
+    AddСorrectOperations(nameof(EditWorkspaceTypePatch.EndTime), new List<OperationType> { OperationType.Replace });
+    AddСorrectOperations(nameof(EditWorkspaceTypePatch.BookingRule), new List<OperationType> { OperationType.Replace });
+    AddСorrectOperations(nameof(EditWorkspaceTypePatch.IsActive), new List<OperationType> { OperationType.Replace });
 
     #endregion
 
     #region Name
 
     await AddFailureForPropertyIfAsync(
-      nameof(EditWorkspaceTypeRequest.Name),
+      nameof(EditWorkspaceTypePatch.Name),
       x => x == OperationType.Replace,
       new()
       {
@@ -59,7 +58,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
           "Workspace type name length cannot be more than 100 characters."
         },
         {
-          async x => !await _workspaceTypeRepository.DoesNameExistAsync(x.value?.ToString().Trim()),
+          async x => !await _provider.WorkspacesTypes.AnyAsync(wt => string.Equals(wt.Name, x.value.ToString().Trim())),
           "Workspace type name already exists."
         }
       }, CascadeMode.Stop);
@@ -69,7 +68,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
     #region Description
 
     AddFailureForPropertyIf(
-      nameof(EditWorkspaceTypeRequest.Description),
+      nameof(EditWorkspaceTypePatch.Description),
       x => x == OperationType.Replace,
       new()
       {
@@ -84,7 +83,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
     #region StartTime
 
     AddFailureForPropertyIf(
-      nameof(EditWorkspaceTypeRequest.StartTime),
+      nameof(EditWorkspaceTypePatch.StartTime),
       x => x == OperationType.Replace,
       new()
       {
@@ -99,7 +98,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
     #region EndTime
 
     AddFailureForPropertyIf(
-      nameof(EditWorkspaceTypeRequest.EndTime),
+      nameof(EditWorkspaceTypePatch.EndTime),
       x => x == OperationType.Replace,
       new()
       {
@@ -114,7 +113,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
     #region BookingRule
 
     AddFailureForPropertyIf(
-      nameof(EditWorkspaceTypeRequest.BookingRule),
+      nameof(EditWorkspaceTypePatch.BookingRule),
       x => x == OperationType.Replace,
       new()
       {
@@ -129,7 +128,7 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
     #region IsActive
 
     AddFailureForPropertyIf(
-      nameof(EditWorkspaceTypeRequest.IsActive),
+      nameof(EditWorkspaceTypePatch.IsActive),
       x => x == OperationType.Replace,
       new()
       {
@@ -143,10 +142,10 @@ public class EditWorkspaceTypeRequestValidator : BaseEditRequestValidator<EditWo
 
   }
 
-  public EditWorkspaceTypeRequestValidator(
-    IWorkspaceTypeRepository workspaceTypeRepository)
+  public EditWorkspaceTypeValidator(
+    IDataProvider provider)
   {
-    _workspaceTypeRepository = workspaceTypeRepository;
+    _provider = provider;
 
     RuleForEach(x => x.Operations)
       .CustomAsync(async (x, context, _) => await HandleInternalPropertyValidationAsync(x, context));
