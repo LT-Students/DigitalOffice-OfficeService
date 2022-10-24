@@ -3,11 +3,10 @@
   <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
 
   <ItemGroup>
+    <ProjectReference Include="..\OfficeService.Broker\OfficeService.Broker.csproj" />
     <ProjectReference Include="..\OfficeService.Data\OfficeService.Data.csproj" />
-    <ProjectReference Include="..\OfficeService.Mappers\OfficeService.Mappers.csproj" />
     <ProjectReference Include="..\OfficeService.Models.Db\OfficeService.Models.Db.csproj" />
     <ProjectReference Include="..\OfficeService.Models.Dto\OfficeService.Models.Dto.csproj" />
-    <ProjectReference Include="..\OfficeService.Validation\OfficeService.Validation.csproj" />
   </ItemGroup>
 
 </Project>

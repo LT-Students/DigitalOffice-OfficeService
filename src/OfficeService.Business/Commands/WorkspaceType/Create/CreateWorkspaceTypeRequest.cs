@@ -1,9 +1,10 @@
 ﻿using System;
 using LT.DigitalOffice.OfficeService.Models.Dto.Enums.Workspace;
+using MediatR;
 
-namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType
+namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType.Create
 {
-  public record CreateWorkspaceTypeRequest
+  public record CreateWorkspaceTypeRequest : IRequest<Guid?>
   {
     public string Name { get; set; }
 

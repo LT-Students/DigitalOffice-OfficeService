@@ -1,5 +1,5 @@
 ﻿using System;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType;
+using LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType.Create;
 using MediatR;
 
 namespace LT.DigitalOffice.OfficeService.Business.Commands.Workspace.Create

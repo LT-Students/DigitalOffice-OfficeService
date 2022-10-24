@@ -1,9 +1,9 @@
 ﻿using System;
 using LT.DigitalOffice.OfficeService.Models.Dto.Enums.Workspace;
 
-namespace LT.DigitalOffice.OfficeService.Models.Dto.Requests.WorkspaceType;
+namespace LT.DigitalOffice.OfficeService.Business.Commands.WorkspaceType.Edit;
 
-public record EditWorkspaceTypeRequest
+public record EditWorkspaceTypePatch
 {
   public string Name { get; set; }
 
