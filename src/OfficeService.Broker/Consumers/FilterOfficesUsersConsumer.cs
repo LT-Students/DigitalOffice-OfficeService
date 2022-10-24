@@ -10,22 +10,32 @@ using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Models.Broker.Models.Office;
 using LT.DigitalOffice.Models.Broker.Requests.Office;
 using LT.DigitalOffice.Models.Broker.Responses.Office;
-using LT.DigitalOffice.OfficeService.Data.Interfaces;
+using LT.DigitalOffice.OfficeService.Data.Provider;
 using LT.DigitalOffice.OfficeService.Models.Db;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {
   public class FilterOfficesUsersConsumer : IConsumer<IFilterOfficesRequest>
   {
-    private readonly IOfficeRepository _repository;
+    private readonly IDataProvider _provider;
     private readonly IOptions<RedisConfig> _redisConfig;
     private readonly IGlobalCacheRepository _globalCache;
 
+    public async Task<List<DbOffice>> GetOfficesAsync(List<Guid> officesIds)
+    {
+      return await _provider.Offices
+        .Where(o => officesIds.Contains(o.Id))
+        .Include(o => o.Users)
+        .Where(u => u.IsActive)
+        .ToListAsync();
+    }
+
     private async Task<List<OfficeFilteredData>> GetOfficesDataAsync(IFilterOfficesRequest request)
     {
-      List<DbOffice> offices = await _repository.GetAsync(request.OfficesIds);
+      List<DbOffice> offices = await GetOfficesAsync(request.OfficesIds);
 
       return offices.Select(
         o => new OfficeFilteredData(
@@ -35,11 +45,11 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
         .ToList();
     }
     public FilterOfficesUsersConsumer(
-      IOfficeRepository repository,
+      IDataProvider provider,
       IOptions<RedisConfig> redisConfig,
       IGlobalCacheRepository globalCache)
     {
-      _repository = repository;
+      _provider = provider;
       _redisConfig = redisConfig;
       _globalCache = globalCache;
     }
@@ -49,7 +59,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
       List<OfficeFilteredData> officesFilteredData = await GetOfficesDataAsync(context.Message);
 
       await context.RespondAsync<IOperationResult<IFilterOfficesResponse>>(
-        OperationResultWrapper.CreateResponse((_) => IFilterOfficesResponse.CreateObj(officesFilteredData), context));
+        OperationResultWrapper.CreateResponse(_ => IFilterOfficesResponse.CreateObj(officesFilteredData), context));
 
       if (officesFilteredData is not null)
       {
