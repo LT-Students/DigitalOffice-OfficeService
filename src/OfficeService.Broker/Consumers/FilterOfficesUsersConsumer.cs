@@ -24,18 +24,18 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
     private readonly IOptions<RedisConfig> _redisConfig;
     private readonly IGlobalCacheRepository _globalCache;
 
-    public async Task<List<DbOffice>> GetOfficesAsync(List<Guid> officesIds)
+    private List<DbOffice> GetOfficesAsync(List<Guid> officesIds)
     {
-      return await _provider.Offices
+      return  _provider.Offices
         .Where(o => officesIds.Contains(o.Id))
         .Include(o => o.Users)
         .Where(u => u.IsActive)
-        .ToListAsync();
+        .ToList();
     }
 
-    private async Task<List<OfficeFilteredData>> GetOfficesDataAsync(IFilterOfficesRequest request)
+    private List<OfficeFilteredData> GetOfficesDataAsync(IFilterOfficesRequest request)
     {
-      List<DbOffice> offices = await GetOfficesAsync(request.OfficesIds);
+      List<DbOffice> offices = GetOfficesAsync(request.OfficesIds);
 
       return offices.Select(
         o => new OfficeFilteredData(
@@ -44,6 +44,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
           o.Users.Select(u => u.UserId).ToList()))
         .ToList();
     }
+
     public FilterOfficesUsersConsumer(
       IDataProvider provider,
       IOptions<RedisConfig> redisConfig,
@@ -56,7 +57,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 
     public async Task Consume(ConsumeContext<IFilterOfficesRequest> context)
     {
-      List<OfficeFilteredData> officesFilteredData = await GetOfficesDataAsync(context.Message);
+      List<OfficeFilteredData> officesFilteredData = GetOfficesDataAsync(context.Message);
 
       await context.RespondAsync<IOperationResult<IFilterOfficesResponse>>(
         OperationResultWrapper.CreateResponse(_ => IFilterOfficesResponse.CreateObj(officesFilteredData), context));
