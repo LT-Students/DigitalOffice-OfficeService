@@ -11,7 +11,7 @@ using LT.DigitalOffice.Models.Broker.Models.Office;
 using LT.DigitalOffice.Models.Broker.Requests.Office;
 using LT.DigitalOffice.Models.Broker.Responses.Office;
 using LT.DigitalOffice.OfficeService.Data.Provider;
-using LT.DigitalOffice.OfficeService.Models.Db;
+using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;

@@ -3,8 +3,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
 using LT.DigitalOffice.Kernel.Constants;
-using LT.DigitalOffice.OfficeService.Business.Commands.Workspace.Create;
-using LT.DigitalOffice.OfficeService.Business.Commands.Workspace.Find;
+using LT.DigitalOffice.OfficeService.Business.Workspace.Create;
+using LT.DigitalOffice.OfficeService.Business.Workspace.Find;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

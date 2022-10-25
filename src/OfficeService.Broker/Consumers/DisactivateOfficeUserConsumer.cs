@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Models.Broker.Publishing;
 using LT.DigitalOffice.OfficeService.Data.Provider;
-using LT.DigitalOffice.OfficeService.Models.Db;
+using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 

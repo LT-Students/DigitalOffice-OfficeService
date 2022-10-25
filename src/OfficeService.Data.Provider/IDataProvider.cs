@@ -1,8 +1,7 @@
 ﻿using LT.DigitalOffice.Kernel.Attributes;
 using LT.DigitalOffice.Kernel.EFSupport.Provider;
 using LT.DigitalOffice.Kernel.Enums;
-using LT.DigitalOffice.OfficeService.Models.Db;
-
+using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Data.Provider

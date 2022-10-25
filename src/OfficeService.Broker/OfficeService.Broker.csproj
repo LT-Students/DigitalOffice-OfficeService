@@ -3,8 +3,8 @@
   <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
 
   <ItemGroup>
+    <ProjectReference Include="..\OfficeService.Data.Provider.MsSql.Ef\OfficeService.DataLayer.csproj" />
     <ProjectReference Include="..\OfficeService.Data.Provider\OfficeService.Data.Provider.csproj" />
-    <ProjectReference Include="..\OfficeService.Models.Dto\OfficeService.Models.Dto.csproj" />
   </ItemGroup>
 
 </Project>

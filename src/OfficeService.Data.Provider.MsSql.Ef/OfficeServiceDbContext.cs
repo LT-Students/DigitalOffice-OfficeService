@@ -1,14 +1,13 @@
 ﻿using System.Reflection;
-using System.Threading.Tasks;
-using LT.DigitalOffice.OfficeService.Models.Db;
+using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef
+namespace LT.DigitalOffice.OfficeService.DataLayer
 {
   /// <summary>
   /// A class that defines the tables and its properties in the database of OfficeService.
   /// </summary>
-  public class OfficeServiceDbContext : DbContext, IDataProvider
+  public class OfficeServiceDbContext : DbContext
   {
     public DbSet<DbOffice> Offices { get; set; }
     public DbSet<DbOfficeUser> OfficesUsers { get; set; }
@@ -26,33 +25,6 @@ namespace LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
       modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("LT.DigitalOffice.OfficeService.Models.Db"));
-    }
-
-    public object MakeEntityDetached(object obj)
-    {
-      Entry(obj).State = EntityState.Detached;
-
-      return Entry(obj).State;
-    }
-
-    public void Save()
-    {
-      SaveChanges();
-    }
-
-    public void EnsureDeleted()
-    {
-      Database.EnsureDeleted();
-    }
-
-    public bool IsInMemory()
-    {
-      return Database.IsInMemory();
-    }
-
-    public async Task SaveAsync()
-    {
-      await SaveChangesAsync();
     }
   }
 }

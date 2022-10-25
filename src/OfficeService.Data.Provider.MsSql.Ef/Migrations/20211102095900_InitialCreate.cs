@@ -1,6 +1,6 @@
 ﻿using System;
-using LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef;
-using LT.DigitalOffice.OfficeService.Models.Db;
+using LT.DigitalOffice.OfficeService.DataLayer;
+using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
