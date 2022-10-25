@@ -16,7 +16,6 @@
       <ProjectReference Include="..\OfficeService.Broker\OfficeService.Broker.csproj" />
       <ProjectReference Include="..\OfficeService.Business\OfficeService.Business.csproj" />
       <ProjectReference Include="..\OfficeService.Data.Provider.MsSql.Ef\OfficeService.Data.Provider.MsSql.Ef.csproj" />
-      <ProjectReference Include="..\OfficeService.Data\OfficeService.Data.csproj" />
       <ProjectReference Include="..\OfficeService.Models.Db\OfficeService.Models.Db.csproj" />
       <ProjectReference Include="..\OfficeService.Models.Dto\OfficeService.Models.Dto.csproj" />
     </ItemGroup>
