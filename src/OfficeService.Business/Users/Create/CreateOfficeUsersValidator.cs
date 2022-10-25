@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using FluentValidation;
 using LT.DigitalOffice.OfficeService.Broker.Requests.Interfaces;
-using LT.DigitalOffice.OfficeService.DataLayer;
+using LT.DigitalOffice.OfficeService.Data.Provider;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Business.Users.Create

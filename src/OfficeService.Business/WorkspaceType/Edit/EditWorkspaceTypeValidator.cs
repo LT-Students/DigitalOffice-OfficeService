@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using LT.DigitalOffice.Kernel.Validators;
 using LT.DigitalOffice.OfficeService.Broker.Requests;
-using LT.DigitalOffice.OfficeService.DataLayer;
+using LT.DigitalOffice.OfficeService.Data.Provider;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.EntityFrameworkCore;

@@ -7,7 +7,7 @@ using LT.DigitalOffice.Kernel.Exceptions.Models;
 using LT.DigitalOffice.Kernel.FluentValidationExtensions;
 using LT.DigitalOffice.Kernel.Validators.Interfaces;
 using LT.DigitalOffice.OfficeService.Broker.Requests;
-using LT.DigitalOffice.OfficeService.DataLayer;
+using LT.DigitalOffice.OfficeService.Data.Provider;
 using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
