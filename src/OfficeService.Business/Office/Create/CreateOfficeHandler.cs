@@ -12,7 +12,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Create
 {
   public class CreateOfficeHandler : IRequestHandler<CreateOfficeRequest, Guid?>
   {
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     #region private methods
@@ -37,8 +37,8 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Create
 
     private async Task<Guid?> CreateOfficeAsync(DbOffice office, CancellationToken ct)
     {
-      await _provider.Offices.AddAsync(office, ct);
-      await _provider.SaveAsync();
+      await _dbContext.Offices.AddAsync(office, ct);
+      await _dbContext.SaveAsync();
 
       return office.Id;
     }
@@ -46,10 +46,10 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Create
     #endregion
 
     public CreateOfficeHandler(
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       IHttpContextAccessor httpContextAccessor)
     {
-      _provider = provider;
+      _dbContext = dbContext;
       _httpContextAccessor = httpContextAccessor;
     }
 

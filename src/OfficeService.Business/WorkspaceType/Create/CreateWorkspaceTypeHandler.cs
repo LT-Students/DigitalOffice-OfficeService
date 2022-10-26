@@ -12,7 +12,7 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Create
 {
   public class CreateWorkspaceTypeHandler : IRequestHandler<CreateWorkspaceTypeRequest, Guid?>
   {
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     #region private methods
@@ -24,8 +24,8 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Create
         return null;
       }
 
-      _provider.WorkspacesTypes.Add(workspaceType);
-      await _provider.SaveAsync();
+      _dbContext.WorkspacesTypes.Add(workspaceType);
+      await _dbContext.SaveAsync();
 
       return workspaceType.Id;
     }
@@ -56,10 +56,10 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Create
     #endregion
 
     public CreateWorkspaceTypeHandler(
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       IHttpContextAccessor httpContextAccessor)
     {
-      _provider = provider;
+      _dbContext = dbContext;
       _httpContextAccessor = httpContextAccessor;
     }
 

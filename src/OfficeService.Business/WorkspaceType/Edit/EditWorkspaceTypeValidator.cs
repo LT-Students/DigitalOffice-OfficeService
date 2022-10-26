@@ -13,7 +13,7 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Edit;
 
 public class EditWorkspaceTypeValidator : BaseEditRequestValidator<EditWorkspaceTypePatch>, IEditWorkspaceTypeValidator
 {
-  private readonly IDataProvider _provider;
+  private readonly OfficeServiceDbContext _dbContext;
 
   private async Task HandleInternalPropertyValidationAsync(Operation<EditWorkspaceTypePatch> requestedOperation, ValidationContext<JsonPatchDocument<EditWorkspaceTypePatch>> context)
   {
@@ -58,7 +58,7 @@ public class EditWorkspaceTypeValidator : BaseEditRequestValidator<EditWorkspace
           "Workspace type name length cannot be more than 100 characters."
         },
         {
-          async x => !await _provider.WorkspacesTypes.AnyAsync(wt => string.Equals(wt.Name, x.value.ToString().Trim())),
+          async x => !await _dbContext.WorkspacesTypes.AnyAsync(wt => string.Equals(wt.Name, x.value.ToString().Trim())),
           "Workspace type name already exists."
         }
       }, CascadeMode.Stop);
@@ -142,10 +142,9 @@ public class EditWorkspaceTypeValidator : BaseEditRequestValidator<EditWorkspace
 
   }
 
-  public EditWorkspaceTypeValidator(
-    IDataProvider provider)
+  public EditWorkspaceTypeValidator(OfficeServiceDbContext dbContext)
   {
-    _provider = provider;
+    _dbContext = dbContext;
 
     RuleForEach(x => x.Operations)
       .CustomAsync(async (x, context, _) => await HandleInternalPropertyValidationAsync(x, context));

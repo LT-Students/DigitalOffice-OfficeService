@@ -17,7 +17,7 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Find
 {
   public class FindWorkspaceTypesHandler : IRequestHandler<WorkspaceTypeFindFilter, FindResult<WorkspaceTypeInfo>>
   {
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly IBaseFindFilterValidator _baseFindValidator;
 
     #region private methods
@@ -29,7 +29,7 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Find
         return (null, 0);
       }
 
-      IQueryable<DbWorkspaceType> dbWorkspaceTypes = _provider.WorkspacesTypes
+      IQueryable<DbWorkspaceType> dbWorkspaceTypes = _dbContext.WorkspacesTypes
         .AsQueryable();
 
       if (!filter.IncludeDeactivated)
@@ -66,10 +66,10 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Find
     #endregion
 
     public FindWorkspaceTypesHandler(
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       IBaseFindFilterValidator baseFindValidator)
     {
-      _provider = provider;
+      _dbContext = dbContext;
       _baseFindValidator = baseFindValidator;
     }
 

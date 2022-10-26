@@ -13,7 +13,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Users.Remove
 {
   public class RemoveOfficeUsersHandler : IRequestHandler<RemoveOfficeUsersRequest, bool>
   {
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly IGlobalCacheRepository _globalCache;
 
     #region private methods
@@ -26,15 +26,15 @@ namespace LT.DigitalOffice.OfficeService.Business.Users.Remove
       }
 
       List<DbOfficeUser> officeUsers = officeId.HasValue
-        ? await _provider.OfficesUsers
+        ? await _dbContext.OfficesUsers
           .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId))
           .ToListAsync(ct)
-        : await _provider.OfficesUsers
+        : await _dbContext.OfficesUsers
           .Where(ou => usersIds.Contains(ou.UserId))
           .ToListAsync(ct);
 
-      _provider.OfficesUsers.RemoveRange(officeUsers);
-      await _provider.SaveAsync();
+      _dbContext.OfficesUsers.RemoveRange(officeUsers);
+      await _dbContext.SaveAsync();
 
       return officeUsers.Select(ou => ou.UserId).ToList();
     }
@@ -42,10 +42,10 @@ namespace LT.DigitalOffice.OfficeService.Business.Users.Remove
     #endregion
 
     public RemoveOfficeUsersHandler(
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       IGlobalCacheRepository globalCache)
     {
-      _provider = provider;
+      _dbContext = dbContext;
       _globalCache = globalCache;
     }
 

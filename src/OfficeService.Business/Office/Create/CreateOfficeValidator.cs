@@ -9,13 +9,13 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Create
   {
     private readonly Regex _nameRegex = new(@"^\s+|\s+$|\s+(?=\s)");
 
-    public CreateOfficeValidator(IDataProvider provider)
+    public CreateOfficeValidator(OfficeServiceDbContext dbContext)
     {
       When(r => !string.IsNullOrWhiteSpace(r.Name), () =>
       {
         RuleFor(r => r.Name)
           .MustAsync(async (name, ct) =>
-            !await provider.Offices.AnyAsync(o => string.Equals(o.Name, _nameRegex.Replace(name, "")), ct))
+            !await dbContext.Offices.AnyAsync(o => string.Equals(o.Name, _nameRegex.Replace(name, "")), ct))
           .WithMessage("Name already exists.");
       });
 

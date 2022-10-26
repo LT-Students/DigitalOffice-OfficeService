@@ -22,14 +22,14 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
   {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IGlobalCacheRepository _globalCache;
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly IEditOfficeValidator _validator;
 
     #region private methods
 
     private async Task RemoveOfficeUserAsync(Guid officeId)
     {
-      List<DbOfficeUser> dbUsers = await _provider.OfficesUsers.Where(x => x.OfficeId == officeId).ToListAsync();
+      List<DbOfficeUser> dbUsers = await _dbContext.OfficesUsers.Where(x => x.OfficeId == officeId).ToListAsync();
       DateTime modifiedAtUtc = DateTime.UtcNow;
       Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
 
@@ -40,12 +40,12 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
         user.ModifiedBy = senderId;
       }
 
-      await _provider.SaveAsync();
+      await _dbContext.SaveAsync();
     }
 
     private async Task<bool> EditOfficeAsync(Guid officeId, JsonPatchDocument<DbOffice> request, CancellationToken ct)
     {
-      DbOffice dbOffice = await _provider.Offices.FirstOrDefaultAsync(x => x.Id == officeId, ct);
+      DbOffice dbOffice = await _dbContext.Offices.FirstOrDefaultAsync(x => x.Id == officeId, ct);
 
       if (dbOffice == null || request == null)
       {
@@ -55,7 +55,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
       request.ApplyTo(dbOffice);
       dbOffice.ModifiedBy = _httpContextAccessor.HttpContext.GetUserId();
       dbOffice.ModifiedAtUtc = DateTime.UtcNow;
-      await _provider.SaveAsync();
+      await _dbContext.SaveAsync();
 
       return true;
     }
@@ -103,12 +103,12 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
     public EditOfficeHandler(
       IHttpContextAccessor httpContextAccessor,
       IGlobalCacheRepository globalCache,
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       IEditOfficeValidator validator)
     {
       _httpContextAccessor = httpContextAccessor;
       _globalCache = globalCache;
-      _provider = provider;
+      _dbContext = dbContext;
       _validator = validator;
     }
 

@@ -12,16 +12,16 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {
   public class CreateUserOfficeConsumer : IConsumer<ICreateUserOfficePublish>
   {
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly IGlobalCacheRepository _globalCache;
     private readonly ILogger<CreateUserOfficeConsumer> _logger;
 
     public CreateUserOfficeConsumer(
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       IGlobalCacheRepository globalCache,
       ILogger<CreateUserOfficeConsumer> logger)
     {
-      _provider = provider;
+      _dbContext = dbContext;
       _globalCache = globalCache;
       _logger = logger;
     }
@@ -29,7 +29,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
     public async Task Consume(ConsumeContext<ICreateUserOfficePublish> context)
     {
       ICreateUserOfficePublish publish = context.Message;
-      if (await _provider.Offices.AnyAsync(o => o.Id == publish.OfficeId))
+      if (await _dbContext.Offices.AnyAsync(o => o.Id == publish.OfficeId))
       {
         if (publish is null)
         {
@@ -46,7 +46,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
           IsActive = publish.IsActive
         };
 
-        await _provider.OfficesUsers.AddAsync(user);
+        await _dbContext.OfficesUsers.AddAsync(user);
 
         if (publish.IsActive)
         {

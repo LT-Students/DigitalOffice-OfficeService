@@ -15,7 +15,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Find
 {
   public class FindOfficesHandler : IRequestHandler<OfficeFindFilter, FindResult<OfficeInfo>>
   {
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly IBaseFindFilterValidator _baseFindValidator;
 
     #region private methods
@@ -24,7 +24,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Find
       OfficeFindFilter filter,
       CancellationToken ct)
     {
-      IQueryable<DbOffice> dbOffices = _provider.Offices
+      IQueryable<DbOffice> dbOffices = _dbContext.Offices
         .AsQueryable();
 
       if (filter.IsActive.HasValue)
@@ -69,10 +69,10 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Find
     #endregion
 
     public FindOfficesHandler(
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       IBaseFindFilterValidator baseFindValidator)
     {
-      _provider = provider;
+      _dbContext = dbContext;
       _baseFindValidator = baseFindValidator;
     }
 

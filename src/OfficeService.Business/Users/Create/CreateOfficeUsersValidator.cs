@@ -9,11 +9,11 @@ namespace LT.DigitalOffice.OfficeService.Business.Users.Create
   public class CreateOfficeUsersValidator : AbstractValidator<CreateOfficeUsersRequest>
   {
     public CreateOfficeUsersValidator(
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       IUserService userService)
     {
       RuleFor(r => r.OfficeId)
-        .MustAsync(async (id, _) => await provider.Offices.AnyAsync(o => o.Id == id))
+        .MustAsync(async (id, _) => await dbContext.Offices.AnyAsync(o => o.Id == id))
         .WithMessage("Office must exist.");
 
       RuleFor(r => r.UsersIds)

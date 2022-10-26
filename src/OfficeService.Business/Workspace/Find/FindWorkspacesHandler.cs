@@ -17,7 +17,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Workspace.Find
   public class FindWorkspacesHandler : IRequestHandler<WorkspaceFindFilter, FindResult<WorkspaceInfo>>
   {
     private readonly IBaseFindFilterValidator _baseFindValidator;
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
 
     #region private methods
 
@@ -30,7 +30,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Workspace.Find
         return (null, 0);
       }
 
-      IQueryable<DbWorkspace> dbWorkspaces = _provider.Workspaces;
+      IQueryable<DbWorkspace> dbWorkspaces = _dbContext.Workspaces;
 
       if (!filter.IncludeDeactivated)
       {
@@ -77,10 +77,10 @@ namespace LT.DigitalOffice.OfficeService.Business.Workspace.Find
 
     public FindWorkspacesHandler(
       IBaseFindFilterValidator baseFindValidator,
-      IDataProvider provider)
+      OfficeServiceDbContext dbContext)
     {
       _baseFindValidator = baseFindValidator;
-      _provider = provider;
+      _dbContext = dbContext;
     }
 
     public async Task<FindResult<WorkspaceInfo>> Handle(WorkspaceFindFilter filter, CancellationToken ct)

@@ -17,7 +17,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Users.Create
   {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IGlobalCacheRepository _globalCache;
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
 
     #region private methods
 
@@ -29,15 +29,15 @@ namespace LT.DigitalOffice.OfficeService.Business.Users.Create
       }
 
       List<DbOfficeUser> officeUsers = officeId.HasValue
-        ? await _provider.OfficesUsers
+        ? await _dbContext.OfficesUsers
           .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId))
           .ToListAsync(ct)
-        : await _provider.OfficesUsers
+        : await _dbContext.OfficesUsers
           .Where(ou => usersIds.Contains(ou.UserId))
           .ToListAsync(ct);
 
-      _provider.OfficesUsers.RemoveRange(officeUsers);
-      await _provider.SaveAsync();
+      _dbContext.OfficesUsers.RemoveRange(officeUsers);
+      await _dbContext.SaveAsync();
 
       return officeUsers.Select(ou => ou.UserId).ToList();
     }
@@ -49,8 +49,8 @@ namespace LT.DigitalOffice.OfficeService.Business.Users.Create
         return false;
       }
 
-      await _provider.OfficesUsers.AddRangeAsync(dbOfficesUsers);
-      await _provider.SaveAsync();
+      await _dbContext.OfficesUsers.AddRangeAsync(dbOfficesUsers);
+      await _dbContext.SaveAsync();
 
       return true;
     }
@@ -73,11 +73,11 @@ namespace LT.DigitalOffice.OfficeService.Business.Users.Create
     public CreateOfficeUsersHandler(
       IHttpContextAccessor httpContextAccessor,
       IGlobalCacheRepository globalCache,
-      IDataProvider provider)
+      OfficeServiceDbContext dbContext)
     {
       _httpContextAccessor = httpContextAccessor;
       _globalCache = globalCache;
-      _provider = provider;
+      _dbContext = dbContext;
     }
 
     public async Task<bool> Handle(CreateOfficeUsersRequest request, CancellationToken ct)

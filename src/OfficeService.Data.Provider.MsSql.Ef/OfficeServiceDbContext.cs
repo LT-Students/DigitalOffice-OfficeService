@@ -8,7 +8,7 @@ namespace LT.DigitalOffice.OfficeService.DataLayer
   /// <summary>
   /// A class that defines the tables and its properties in the database of OfficeService.
   /// </summary>
-  public class OfficeServiceDbContext : DbContext, IDataProvider
+  public class OfficeServiceDbContext : DbContext
   {
     public DbSet<DbOffice> Offices { get; set; }
     public DbSet<DbOfficeUser> OfficesUsers { get; set; }

@@ -19,7 +19,7 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Edit;
 
 public class EditWorkspaceTypeHandler : IRequestHandler<EditWorkspaceTypeRequest, bool>
 {
-  private readonly IDataProvider _provider;
+  private readonly OfficeServiceDbContext _dbContext;
   private readonly IHttpContextAccessor _httpContextAccessor;
   private readonly IEditWorkspaceTypeValidator _validator;
   private readonly IGlobalCacheRepository _globalCache;
@@ -28,7 +28,7 @@ public class EditWorkspaceTypeHandler : IRequestHandler<EditWorkspaceTypeRequest
 
   private async Task<bool> EditWorkspaceTypeAsync(Guid workspaceId, JsonPatchDocument<DbWorkspaceType> request, CancellationToken ct)
   {
-    DbWorkspaceType dbWorkspaceType = await _provider.WorkspacesTypes
+    DbWorkspaceType dbWorkspaceType = await _dbContext.WorkspacesTypes
       .FirstOrDefaultAsync(x => x.Id == workspaceId, ct);
 
     if (dbWorkspaceType is null || request is null)
@@ -39,7 +39,7 @@ public class EditWorkspaceTypeHandler : IRequestHandler<EditWorkspaceTypeRequest
     request.ApplyTo(dbWorkspaceType);
     dbWorkspaceType.ModifiedBy = _httpContextAccessor.HttpContext.GetUserId();
     dbWorkspaceType.ModifiedAtUtc = DateTime.UtcNow;
-    await _provider.SaveAsync();
+    await _dbContext.SaveAsync();
 
     return true;
   }
@@ -70,12 +70,12 @@ public class EditWorkspaceTypeHandler : IRequestHandler<EditWorkspaceTypeRequest
   #endregion
 
   public EditWorkspaceTypeHandler(
-    IDataProvider provider,
+    OfficeServiceDbContext dbContext,
     IHttpContextAccessor httpContextAccessor,
     IEditWorkspaceTypeValidator validator,
     IGlobalCacheRepository globalCache)
   {
-    _provider = provider;
+    _dbContext = dbContext;
     _httpContextAccessor = httpContextAccessor;
     _validator = validator;
     _globalCache = globalCache;

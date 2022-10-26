@@ -14,11 +14,11 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
   public class EditOfficeValidator : BaseEditRequestValidator<EditOfficePatch>, IEditOfficeValidator
   {
     private readonly Regex _nameRegex = new(@"^\s+|\s+$|\s+(?=\s)");
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
 
     private async Task<bool> DoesNameExistAsync(string name)
     {
-      return !await _provider.Offices.AnyAsync(o => o.Name == name);
+      return !await _dbContext.Offices.AnyAsync(o => o.Name == name);
     }
 
     private void HandleInternalPropertyValidation(
@@ -85,10 +85,9 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
       #endregion
     }
 
-    public EditOfficeValidator(
-      IDataProvider provider)
+    public EditOfficeValidator(OfficeServiceDbContext dbContext)
     {
-      _provider = provider;
+      _dbContext = dbContext;
 
       RuleForEach(x => x.Operations)
         .Custom(HandleInternalPropertyValidation);

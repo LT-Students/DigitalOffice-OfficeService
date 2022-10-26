@@ -12,11 +12,11 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {
   public class CheckWorkspaceIsBookableConsumer : IConsumer<ICheckWorkspaceIsBookableRequest>
   {
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
 
     private async Task<DbWorkspace> GetWorkspacesAsync(Guid workspaceId)
     {
-      return await _provider.Workspaces
+      return await _dbContext.Workspaces
         .Include(w => w.WorkspaceType)
         .FirstOrDefaultAsync(x =>
           x.Id == workspaceId
@@ -34,9 +34,9 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
     }
 
     public CheckWorkspaceIsBookableConsumer(
-      IDataProvider provider)
+      OfficeServiceDbContext dbContext)
     {
-      _provider = provider;
+      _dbContext = dbContext;
     }
 
     public async Task Consume(ConsumeContext<ICheckWorkspaceIsBookableRequest> context)
