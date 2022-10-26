@@ -3,9 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DigitalOffice.Kernel.Responses;
-using LT.DigitalOffice.Kernel.Exceptions.Models;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
-using LT.DigitalOffice.Kernel.Validators.Interfaces;
 using LT.DigitalOffice.OfficeService.DataLayer;
 using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using MediatR;
@@ -16,7 +13,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Find
   public class FindOfficesHandler : IRequestHandler<OfficeFindFilter, FindResult<OfficeInfo>>
   {
     private readonly OfficeServiceDbContext _dbContext;
-    private readonly IBaseFindFilterValidator _baseFindValidator;
 
     #region private methods
 
@@ -69,20 +65,13 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Find
     #endregion
 
     public FindOfficesHandler(
-      OfficeServiceDbContext dbContext,
-      IBaseFindFilterValidator baseFindValidator)
+      OfficeServiceDbContext dbContext)
     {
       _dbContext = dbContext;
-      _baseFindValidator = baseFindValidator;
     }
 
     public async Task<FindResult<OfficeInfo>> Handle(OfficeFindFilter filter, CancellationToken ct)
     {
-      if (!_baseFindValidator.ValidateCustom(filter, out List<string> errors) || filter is null)
-      {
-        throw new BadRequestException(errors);
-      }
-
       (List<DbOffice> offices, int totalCount) result = await FindOfficesAsync(filter, ct);
 
       return new FindResult<OfficeInfo>

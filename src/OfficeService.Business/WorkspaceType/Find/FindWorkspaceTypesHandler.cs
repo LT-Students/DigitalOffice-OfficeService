@@ -3,9 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DigitalOffice.Kernel.Responses;
-using LT.DigitalOffice.Kernel.Exceptions.Models;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
-using LT.DigitalOffice.Kernel.Validators.Interfaces;
 using LT.DigitalOffice.OfficeService.Broker.Requests;
 using LT.DigitalOffice.OfficeService.Business.Workspace.Find;
 using LT.DigitalOffice.OfficeService.DataLayer;
@@ -18,7 +15,6 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Find
   public class FindWorkspaceTypesHandler : IRequestHandler<WorkspaceTypeFindFilter, FindResult<WorkspaceTypeInfo>>
   {
     private readonly OfficeServiceDbContext _dbContext;
-    private readonly IBaseFindFilterValidator _baseFindValidator;
 
     #region private methods
 
@@ -65,21 +61,13 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Find
 
     #endregion
 
-    public FindWorkspaceTypesHandler(
-      OfficeServiceDbContext dbContext,
-      IBaseFindFilterValidator baseFindValidator)
+    public FindWorkspaceTypesHandler(OfficeServiceDbContext dbContext)
     {
       _dbContext = dbContext;
-      _baseFindValidator = baseFindValidator;
     }
 
     public async Task<FindResult<WorkspaceTypeInfo>> Handle(WorkspaceTypeFindFilter filter, CancellationToken ct)
     {
-      if (!_baseFindValidator.ValidateCustom(filter, out var errors))
-      {
-        throw new BadRequestException(errors);
-      }
-
       (List<DbWorkspaceType> workspaceTypes, int totalCount) = await FindWorkspaceTypesAsync(filter);
 
       return new FindResult<WorkspaceTypeInfo>

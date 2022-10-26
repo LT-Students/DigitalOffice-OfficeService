@@ -3,9 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using DigitalOffice.Kernel.Responses;
-using LT.DigitalOffice.Kernel.Exceptions.Models;
-using LT.DigitalOffice.Kernel.FluentValidationExtensions;
-using LT.DigitalOffice.Kernel.Validators.Interfaces;
 using LT.DigitalOffice.OfficeService.Broker.Requests;
 using LT.DigitalOffice.OfficeService.DataLayer;
 using LT.DigitalOffice.OfficeService.DataLayer.Models;
@@ -16,7 +13,6 @@ namespace LT.DigitalOffice.OfficeService.Business.Workspace.Find
 {
   public class FindWorkspacesHandler : IRequestHandler<WorkspaceFindFilter, FindResult<WorkspaceInfo>>
   {
-    private readonly IBaseFindFilterValidator _baseFindValidator;
     private readonly OfficeServiceDbContext _dbContext;
 
     #region private methods
@@ -75,24 +71,20 @@ namespace LT.DigitalOffice.OfficeService.Business.Workspace.Find
 
     #endregion
 
-    public FindWorkspacesHandler(
-      IBaseFindFilterValidator baseFindValidator,
-      OfficeServiceDbContext dbContext)
+    public FindWorkspacesHandler(OfficeServiceDbContext dbContext)
     {
-      _baseFindValidator = baseFindValidator;
       _dbContext = dbContext;
     }
 
     public async Task<FindResult<WorkspaceInfo>> Handle(WorkspaceFindFilter filter, CancellationToken ct)
     {
-      if (!_baseFindValidator.ValidateCustom(filter, out var errors))
-      {
-        throw new BadRequestException(errors);
-      }
-
       (List<DbWorkspace> workspaces, int totalCount) = await FindWorkspacesAsync(filter, ct);
 
-      return new FindResult<WorkspaceInfo> { Body = workspaces.ConvertAll(Map), TotalCount = totalCount };
+      return new FindResult<WorkspaceInfo>
+      {
+        Body = workspaces.ConvertAll(Map),
+        TotalCount = totalCount
+      };
     }
   }
 }
