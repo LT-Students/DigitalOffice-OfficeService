@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.Extensions;
-using LT.DigitalOffice.OfficeService.Data.Provider;
+using LT.DigitalOffice.OfficeService.DataLayer;
 using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using MediatR;
 using Microsoft.AspNetCore.Http;

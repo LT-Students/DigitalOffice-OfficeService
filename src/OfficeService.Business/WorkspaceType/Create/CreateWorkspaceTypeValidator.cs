@@ -1,5 +1,5 @@
 ﻿using FluentValidation;
-using LT.DigitalOffice.OfficeService.Data.Provider;
+using LT.DigitalOffice.OfficeService.DataLayer;
 using Microsoft.EntityFrameworkCore;
 
 namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Create

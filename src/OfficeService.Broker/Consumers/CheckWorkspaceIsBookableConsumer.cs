@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using LT.DigitalOffice.Kernel.BrokerSupport.Broker;
 using LT.DigitalOffice.Models.Broker.Requests.Office;
 using LT.DigitalOffice.OfficeService.Broker.Requests;
-using LT.DigitalOffice.OfficeService.Data.Provider;
+using LT.DigitalOffice.OfficeService.DataLayer;
 using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;

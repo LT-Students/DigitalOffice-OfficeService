@@ -4,7 +4,7 @@ using LT.DigitalOffice.Kernel.Enums;
 using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LT.DigitalOffice.OfficeService.Data.Provider
+namespace LT.DigitalOffice.OfficeService.DataLayer
 {
   [AutoInject(InjectType.Scoped)]
   public interface IDataProvider : IBaseDataProvider

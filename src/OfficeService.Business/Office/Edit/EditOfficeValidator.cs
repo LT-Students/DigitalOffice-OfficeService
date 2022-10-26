@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using FluentValidation;
 using LT.DigitalOffice.Kernel.Validators;
-using LT.DigitalOffice.OfficeService.Data.Provider;
+using LT.DigitalOffice.OfficeService.DataLayer;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,12 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
   public class EditOfficeValidator : BaseEditRequestValidator<EditOfficePatch>, IEditOfficeValidator
   {
     private readonly Regex _nameRegex = new(@"^\s+|\s+$|\s+(?=\s)");
+    private readonly IDataProvider _provider;
+
+    private async Task<bool> DoesNameExistAsync(string name)
+    {
+      return !await _provider.Offices.AnyAsync(o => o.Name == name);
+    }
 
     private void HandleInternalPropertyValidation(
       Operation<EditOfficePatch> requestedOperation,
@@ -81,6 +88,8 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
     public EditOfficeValidator(
       IDataProvider provider)
     {
+      _provider = provider;
+
       RuleForEach(x => x.Operations)
         .Custom(HandleInternalPropertyValidation);
 
@@ -91,11 +100,9 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
           RuleFor(patch => patch)
             .MustAsync(async (patch, _) =>
             {
-              return !await provider.Offices.AnyAsync(o => string.Equals(
-                o.Name,
-                _nameRegex.Replace(patch.Operations.FirstOrDefault(
+              return await DoesNameExistAsync(_nameRegex.Replace(patch.Operations.FirstOrDefault(
                     op => op.path.EndsWith(nameof(EditOfficePatch.Name), StringComparison.OrdinalIgnoreCase)).value
-                  .ToString(), "")));
+                  .ToString(), ""));
             })
             .WithMessage("Name already exists.");
         });
