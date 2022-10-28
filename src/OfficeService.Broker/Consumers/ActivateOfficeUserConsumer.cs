@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
 using DigitalOffice.Models.Broker.Publishing;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
-using LT.DigitalOffice.OfficeService.Data.Provider;
-using LT.DigitalOffice.OfficeService.Models.Db;
+using LT.DigitalOffice.OfficeService.DataLayer;
+using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,28 +12,28 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
   public class ActivateOfficeUserConsumer : IConsumer<IActivateUserPublish>
   {
     private readonly IGlobalCacheRepository _globalCache;
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly ILogger<ActivateOfficeUserConsumer> _logger;
 
     public ActivateOfficeUserConsumer(
       IGlobalCacheRepository globalCache,
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       ILogger<ActivateOfficeUserConsumer> logger)
     {
       _globalCache = globalCache;
-      _provider = provider;
+      _dbContext = dbContext;
       _logger = logger;
     }
 
     public async Task Consume(ConsumeContext<IActivateUserPublish> context)
     {
-      DbOfficeUser user = await _provider.OfficesUsers
+      DbOfficeUser user = await _dbContext.OfficesUsers
         .FirstOrDefaultAsync(ou => ou.Id == context.Message.UserId);
 
       if (user is not null)
       {
         user.IsActive = true;
-        await _provider.SaveAsync();
+        await _dbContext.SaveAsync();
 
         await _globalCache.RemoveAsync(user.Id);
 

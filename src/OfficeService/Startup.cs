@@ -18,8 +18,7 @@ using LT.DigitalOffice.Kernel.RedisSupport.Constants;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers;
 using LT.DigitalOffice.OfficeService.Broker.Consumers;
 using LT.DigitalOffice.OfficeService.Business;
-using LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef;
-using LT.DigitalOffice.OfficeService.Models.Dto.Configuration;
+using LT.DigitalOffice.OfficeService.DataLayer;
 using MassTransit;
 using MassTransit.RabbitMqTransport;
 using MediatR;
@@ -56,7 +55,7 @@ namespace LT.DigitalOffice.OfficeService
         .GetSection(BaseServiceInfoConfig.SectionName)
         .Get<BaseServiceInfoConfig>();
 
-      Version = "1.0.3.1";
+      Version = "1.0.3.2";
       Description = "OfficeService is an API that intended to work with offices.";
       StartTime = DateTime.UtcNow;
       ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";

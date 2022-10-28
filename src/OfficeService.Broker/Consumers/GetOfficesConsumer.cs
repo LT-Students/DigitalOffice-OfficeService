@@ -10,8 +10,8 @@ using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Models.Broker.Models.Office;
 using LT.DigitalOffice.Models.Broker.Requests.Office;
 using LT.DigitalOffice.Models.Broker.Responses.Office;
-using LT.DigitalOffice.OfficeService.Data.Provider;
-using LT.DigitalOffice.OfficeService.Models.Db;
+using LT.DigitalOffice.OfficeService.DataLayer;
+using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -20,13 +20,13 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {
   public class GetOfficesConsumer : IConsumer<IGetOfficesRequest>
   {
-    private readonly IDataProvider _provider;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly IOptions<RedisConfig> _redisConfig;
     private readonly IGlobalCacheRepository _globalCache;
 
     private async Task<List<DbOfficeUser>> GetOfficeUsersAsync(List<Guid> usersIds)
     {
-      IQueryable<DbOfficeUser> users = _provider.OfficesUsers
+      IQueryable<DbOfficeUser> users = _dbContext.OfficesUsers
         .Where(u => usersIds.Contains(u.UserId) && u.IsActive)
         .Include(ou => ou.Office)
         .AsQueryable();
@@ -53,11 +53,11 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
     }
 
     public GetOfficesConsumer(
-      IDataProvider provider,
+      OfficeServiceDbContext dbContext,
       IOptions<RedisConfig> redisConfig,
       IGlobalCacheRepository globalCache)
     {
-      _provider = provider;
+      _dbContext = dbContext;
       _redisConfig = redisConfig;
       _globalCache = globalCache;
     }

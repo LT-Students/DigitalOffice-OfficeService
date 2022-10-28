@@ -1,14 +1,14 @@
 ﻿using System.Reflection;
 using System.Threading.Tasks;
-using LT.DigitalOffice.OfficeService.Models.Db;
+using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef
+namespace LT.DigitalOffice.OfficeService.DataLayer
 {
   /// <summary>
   /// A class that defines the tables and its properties in the database of OfficeService.
   /// </summary>
-  public class OfficeServiceDbContext : DbContext, IDataProvider
+  public class OfficeServiceDbContext : DbContext
   {
     public DbSet<DbOffice> Offices { get; set; }
     public DbSet<DbOfficeUser> OfficesUsers { get; set; }
@@ -25,7 +25,7 @@ namespace LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef
     // Fluent API is written here.\
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-      modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("LT.DigitalOffice.OfficeService.Models.Db"));
+      modelBuilder.ApplyConfigurationsFromAssembly(Assembly.Load("LT.DigitalOffice.OfficeService.DataLayer"));
     }
 
     public object MakeEntityDetached(object obj)
