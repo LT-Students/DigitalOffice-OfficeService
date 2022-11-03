@@ -66,7 +66,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
       {
         await _globalCache.CreateAsync(
           Cache.Offices,
-          context.Message.OfficesIds.GetRedisCacheKey(context.Message.GetBasicProperties()),
+          context.Message.OfficesIds.GetRedisCacheKey(nameof(IFilterOfficesRequest), context.Message.GetBasicProperties()),
           officesFilteredData,
           context.Message.OfficesIds,
           TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));
