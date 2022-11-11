@@ -21,6 +21,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Find
       CancellationToken ct)
     {
       IQueryable<DbOffice> dbOffices = _dbContext.Offices
+        .AsNoTracking()
         .AsQueryable();
 
       if (filter.IsActive.HasValue)

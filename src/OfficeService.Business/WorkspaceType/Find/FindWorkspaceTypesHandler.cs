@@ -26,6 +26,7 @@ namespace LT.DigitalOffice.OfficeService.Business.WorkspaceType.Find
       }
 
       IQueryable<DbWorkspaceType> dbWorkspaceTypes = _dbContext.WorkspacesTypes
+        .AsNoTracking()
         .AsQueryable();
 
       if (!filter.IncludeDeactivated)
