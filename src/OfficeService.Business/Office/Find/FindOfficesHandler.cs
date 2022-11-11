@@ -20,9 +20,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Find
       OfficeFindFilter filter,
       CancellationToken ct)
     {
-      IQueryable<DbOffice> dbOffices = _dbContext.Offices
-        .AsNoTracking()
-        .AsQueryable();
+      IQueryable<DbOffice> dbOffices = _dbContext.Offices.AsNoTracking();
 
       if (filter.IsActive.HasValue)
       {
