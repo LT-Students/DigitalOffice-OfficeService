@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -29,7 +28,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Office.Edit
 
     private async Task RemoveOfficeUserAsync(Guid officeId)
     {
-      List<DbOfficeUser> dbUsers = await _dbContext.OfficesUsers.Where(x => x.OfficeId == officeId).ToListAsync();
+      IQueryable<DbOfficeUser> dbUsers = _dbContext.OfficesUsers.Where(x => x.OfficeId == officeId);
       DateTime modifiedAtUtc = DateTime.UtcNow;
       Guid senderId = _httpContextAccessor.HttpContext.GetUserId();
 

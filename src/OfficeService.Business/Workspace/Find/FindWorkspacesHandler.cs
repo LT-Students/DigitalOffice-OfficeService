@@ -26,7 +26,7 @@ namespace LT.DigitalOffice.OfficeService.Business.Workspace.Find
         return (null, 0);
       }
 
-      IQueryable<DbWorkspace> dbWorkspaces = _dbContext.Workspaces;
+      IQueryable<DbWorkspace> dbWorkspaces = _dbContext.Workspaces.AsNoTracking();
 
       if (!filter.IncludeDeactivated)
       {
