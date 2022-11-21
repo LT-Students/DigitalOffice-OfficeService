@@ -30,9 +30,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
       [FromBody] CreateWorkspaceRequest request,
       CancellationToken ct)
     {
-      if (!await _accessValidator.HasRightsAsync(
-           Rights.AddEditRemoveCompanyData,
-           Rights.AddEditRemoveCompanies))
+      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveOffices))
       {
         return StatusCode(403);
       }

@@ -28,13 +28,9 @@ namespace LT.DigitalOffice.OfficeService.Business.Users.Create
         return null;
       }
 
-      List<DbOfficeUser> officeUsers = officeId.HasValue
-        ? await _dbContext.OfficesUsers
-          .Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId))
-          .ToListAsync(ct)
-        : await _dbContext.OfficesUsers
-          .Where(ou => usersIds.Contains(ou.UserId))
-          .ToListAsync(ct);
+      IQueryable<DbOfficeUser> officeUsers = officeId.HasValue
+        ? _dbContext.OfficesUsers.Where(ou => ou.OfficeId == officeId && usersIds.Contains(ou.UserId))
+        : _dbContext.OfficesUsers.Where(ou => usersIds.Contains(ou.UserId));
 
       _dbContext.OfficesUsers.RemoveRange(officeUsers);
       await _dbContext.SaveAsync();

@@ -32,9 +32,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
       [FromBody] CreateWorkspaceTypeRequest request,
       CancellationToken ct)
     {
-      if (!await _accessValidator.HasRightsAsync(
-           Rights.AddEditRemoveCompanyData,
-           Rights.AddEditRemoveCompanies))
+      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveOffices))
       {
         return StatusCode(403);
       }
@@ -59,8 +57,7 @@ namespace LT.DigitalOffice.OfficeService.Controllers
       [FromBody] JsonPatchDocument<EditWorkspaceTypePatch> patch,
       CancellationToken ct)
     {
-      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanyData)
-           && !await _accessValidator.HasRightsAsync(Rights.AddEditRemoveCompanies))
+      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveOffices))
       {
         return StatusCode(403);
       }
