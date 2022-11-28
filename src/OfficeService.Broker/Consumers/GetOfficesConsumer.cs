@@ -10,28 +10,38 @@ using LT.DigitalOffice.Kernel.RedisSupport.Helpers.Interfaces;
 using LT.DigitalOffice.Models.Broker.Models.Office;
 using LT.DigitalOffice.Models.Broker.Requests.Office;
 using LT.DigitalOffice.Models.Broker.Responses.Office;
-using LT.DigitalOffice.OfficeService.Data.Interfaces;
-using LT.DigitalOffice.OfficeService.Models.Db;
+using LT.DigitalOffice.OfficeService.DataLayer;
+using LT.DigitalOffice.OfficeService.DataLayer.Models;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace LT.DigitalOffice.OfficeService.Broker.Consumers
 {
   public class GetOfficesConsumer : IConsumer<IGetOfficesRequest>
   {
-    private readonly IOfficeUserRepository _officeUserRepository;
+    private readonly OfficeServiceDbContext _dbContext;
     private readonly IOptions<RedisConfig> _redisConfig;
     private readonly IGlobalCacheRepository _globalCache;
 
+    private async Task<List<DbOfficeUser>> GetOfficeUsersAsync(List<Guid> usersIds)
+    {
+      IQueryable<DbOfficeUser> users = _dbContext.OfficesUsers
+        .Where(u => usersIds.Contains(u.UserId) && u.IsActive)
+        .Include(ou => ou.Office)
+        .AsQueryable();
+
+      return await users.ToListAsync();
+    }
+
     private async Task<List<OfficeData>> GetOfficesAsync(List<Guid> userIds)
     {
-      List<DbOffice> offices = (await _officeUserRepository
-        .GetAsync(userIds))
+      List<DbOffice> offices = (await GetOfficeUsersAsync(userIds))
         .Select(du => du.Office)
         .Distinct()
         .ToList();
 
-      return offices?.Select(
+      return offices.Select(
         o => new OfficeData(
           o.Id,
           o.Name,
@@ -43,22 +53,20 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
     }
 
     public GetOfficesConsumer(
-      IOfficeUserRepository officeUserRepository,
+      OfficeServiceDbContext dbContext,
       IOptions<RedisConfig> redisConfig,
       IGlobalCacheRepository globalCache)
     {
-      _officeUserRepository = officeUserRepository;
+      _dbContext = dbContext;
       _redisConfig = redisConfig;
       _globalCache = globalCache;
     }
 
     public async Task Consume(ConsumeContext<IGetOfficesRequest> context)
     {
-      List<OfficeData> offices = null;
+      List<OfficeData> offices = await GetOfficesAsync(context.Message.UserIds);
 
-      offices = await GetOfficesAsync(context.Message.UserIds);
-
-      object response = OperationResultWrapper.CreateResponse((_) => IGetOfficesResponse.CreateObj(offices), context);
+      object response = OperationResultWrapper.CreateResponse(_ => IGetOfficesResponse.CreateObj(offices), context);
 
       await context.RespondAsync<IOperationResult<IGetOfficesResponse>>(response);
 
@@ -66,7 +74,7 @@ namespace LT.DigitalOffice.OfficeService.Broker.Consumers
       {
         await _globalCache.CreateAsync(
           Cache.Offices,
-          context.Message.UserIds.GetRedisCacheKey(context.Message.GetBasicProperties()),
+          context.Message.UserIds.GetRedisCacheKey(nameof(IGetOfficesRequest), context.Message.GetBasicProperties()),
           offices,
           offices.Select(o => o.Id).ToList(),
           TimeSpan.FromMinutes(_redisConfig.Value.CacheLiveInMinutes));

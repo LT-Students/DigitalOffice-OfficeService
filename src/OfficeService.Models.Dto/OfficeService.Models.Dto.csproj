@@ -2,4 +2,10 @@
 
   <Import Project="$(ProjectDir)..\..\Common.Configurations.targets" />
 
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+    <Folder Include="Enums\Workspace\" />
+    <Folder Include="Models\Workspace\" />
+  </ItemGroup>
+
 </Project>

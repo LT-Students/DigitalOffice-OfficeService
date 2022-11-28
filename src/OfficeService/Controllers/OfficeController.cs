@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
-using LT.DigitalOffice.OfficeService.Business.Commands.Office.Interfaces;
-using LT.DigitalOffice.OfficeService.Models.Dto.Models;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office;
-using LT.DigitalOffice.Kernel.Responses;
+using LT.DigitalOffice.Kernel.BrokerSupport.AccessValidatorEngine.Interfaces;
+using LT.DigitalOffice.Kernel.Constants;
+using LT.DigitalOffice.OfficeService.Business.Office.Create;
+using LT.DigitalOffice.OfficeService.Business.Office.Edit;
+using LT.DigitalOffice.OfficeService.Business.Office.Find;
+using MediatR;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using LT.DigitalOffice.OfficeService.Models.Dto.Requests.Office.Filters;
 
 namespace LT.DigitalOffice.OfficeService.Controllers
 {
@@ -14,29 +16,56 @@ namespace LT.DigitalOffice.OfficeService.Controllers
   [ApiController]
   public class OfficeController : ControllerBase
   {
-    [HttpPost("create")]
-    public async Task<OperationResultResponse<Guid>> CreateAsync(
-      [FromServices] ICreateOfficeCommand command,
-      [FromBody] CreateOfficeRequest request)
+    private readonly IMediator _mediator;
+    private readonly IAccessValidator _accessValidator;
+
+    public OfficeController(
+      IMediator mediator,
+      IAccessValidator accessValidator)
     {
-      return await command.ExecuteAsync(request);
+      _mediator = mediator;
+      _accessValidator = accessValidator;
+    }
+
+    [HttpPost("create")]
+    public async Task<IActionResult> CreateAsync(
+      [FromBody] CreateOfficeRequest request,
+      CancellationToken ct)
+    {
+      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveOffices))
+      {
+        return StatusCode(403);
+      }
+
+      return Created("/offices", await _mediator.Send(request, ct));
     }
 
     [HttpGet("find")]
-    public async Task<FindResultResponse<OfficeInfo>> FindAsync(
-      [FromServices] IFindOfficesCommand command,
-      [FromQuery] OfficeFindFilter filter)
+    public async Task<IActionResult> FindAsync(
+      [FromQuery] OfficeFindFilter filter,
+      CancellationToken ct)
     {
-      return await command.ExecuteAsync(filter);
+      return Ok(await _mediator.Send(filter, ct));
     }
 
     [HttpPatch("edit")]
-    public async Task<OperationResultResponse<bool>> EditAsync(
-      [FromServices] IEditOfficeCommand command,
+    public async Task<IActionResult> EditAsync(
       [FromQuery] Guid officeId,
-      [FromBody] JsonPatchDocument<EditOfficeRequest> request)
+      [FromBody] JsonPatchDocument<EditOfficePatch> patch,
+      CancellationToken ct)
     {
-      return await command.ExecuteAsync(officeId, request);
+      if (!await _accessValidator.HasRightsAsync(Rights.AddEditRemoveOffices))
+      {
+        return StatusCode(403);
+      }
+
+      EditOfficeRequest request = new()
+      {
+        OfficeId = officeId,
+        Patch = patch
+      };
+
+      return Ok(await _mediator.Send(request, ct));
     }
   }
 }

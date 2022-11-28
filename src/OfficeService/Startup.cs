@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using DigitalOffice.Kernel.Behaviours;
 using DigitalOffice.Kernel.RedisSupport.Extensions;
+using FluentValidation;
 using HealthChecks.UI.Client;
 using LT.DigitalOffice.Kernel.BrokerSupport.Configurations;
 using LT.DigitalOffice.Kernel.BrokerSupport.Extensions;
@@ -15,10 +17,11 @@ using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
 using LT.DigitalOffice.Kernel.RedisSupport.Constants;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers;
 using LT.DigitalOffice.OfficeService.Broker.Consumers;
-using LT.DigitalOffice.OfficeService.Data.Provider.MsSql.Ef;
-using LT.DigitalOffice.OfficeService.Models.Dto.Configuration;
+using LT.DigitalOffice.OfficeService.Business;
+using LT.DigitalOffice.OfficeService.DataLayer;
 using MassTransit;
 using MassTransit.RabbitMqTransport;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.EntityFrameworkCore;
@@ -52,7 +55,7 @@ namespace LT.DigitalOffice.OfficeService
         .GetSection(BaseServiceInfoConfig.SectionName)
         .Get<BaseServiceInfoConfig>();
 
-      Version = "1.0.3.0";
+      Version = "1.0.3.2";
       Description = "OfficeService is an API that intended to work with offices.";
       StartTime = DateTime.UtcNow;
       ApiName = $"LT Digital Office - {_serviceInfoConfig.Name}";
@@ -91,6 +94,8 @@ namespace LT.DigitalOffice.OfficeService
       services.Configure<BaseRabbitMqConfig>(Configuration.GetSection(BaseRabbitMqConfig.SectionName));
       services.Configure<BaseServiceInfoConfig>(Configuration.GetSection(BaseServiceInfoConfig.SectionName));
 
+      services.AddMediatR(typeof(AssemblyMarker));
+
       services.AddHttpContextAccessor();
       services
         .AddControllers()
@@ -116,6 +121,9 @@ namespace LT.DigitalOffice.OfficeService
       services.AddBusinessObjects();
 
       ConfigureMassTransit(services);
+
+      services.AddValidatorsFromAssembly(typeof(AssemblyMarker).Assembly);
+      services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationPipelineBehaviour<,>));
     }
 
     public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
